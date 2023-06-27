@@ -7,6 +7,7 @@ import os
 import matplotlib as mpl
 from matplotlib.colors import LinearSegmentedColormap
 import glob
+import matplotlib.ticker as plticker
 
 import matplotlib.gridspec as gridspec
 import itertools
@@ -60,7 +61,7 @@ def main() -> None:
             if ax_ind == 0:
                 #Bottom - repulsive
                 r,n = GetData(direct, 5.0)  # , potential eV
-                plt.ylim((0,2))
+                plt.ylim((0,4))
                 
             else:
                 #Top - attractive
@@ -73,11 +74,16 @@ def main() -> None:
                 transform=ax.transAxes, fontsize="large", fontweight="bold")
             
             plt.ylabel("$n_{Na}(z)/n_{bulk}$",fontsize=14)
+
             plt.xticks(fontsize=14)
             plt.yticks(fontsize=14)
 
         # ax.set_title(titles[j])
         ax.grid(True)
+        loc = plticker.MultipleLocator(base=2) # this locator puts ticks at regular intervals
+        ax.xaxis.set_major_locator(loc)
+        loc = plticker.MultipleLocator(base=0.5) # this locator puts ticks at regular intervals
+        ax.yaxis.set_major_locator(loc)
         # j-=1
     
     axs[0].legend()

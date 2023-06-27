@@ -5,6 +5,7 @@ import sys
 import os
 import matplotlib as mpl
 from matplotlib.colors import LinearSegmentedColormap
+import matplotlib.ticker as plticker
 
 endRange = 5.0
 stepSize = 0.5
@@ -13,7 +14,9 @@ particle = 1 # on a 0 index basis
 N_bulk = 0.015
 
 
-plt.figure(1)
+# plt.figure(1)
+fig, ax = plt.subplots(1,1)
+plt.sca(ax)
 # --- initialize colormap to color by V0
 normalize = mpl.colors.Normalize(vmin=-endRange, vmax=endRange)
 # cmap = mpl.cm.get_cmap("RdBu")
@@ -36,15 +39,17 @@ for Ui in np.around(np.arange(0,endRange*2 + stepSize ,stepSize), decimals=1)-en
         if Ui==0.: 
             print(f'{n.mean()=}')
     plt.plot(r,n[:,particle]/(N_bulk),color=cmap(normalize(Ui)), lw=1)
-    plt.xlabel("z [$\AA$]",fontsize=11,fontname="Times New Roman")
-    plt.ylabel("$n_{Na}(z)/n_{bulk}$",fontsize=11,fontname="Times New Roman")
+    plt.xlabel("z [$\AA$]",fontsize=14)
+    plt.ylabel("$n_{Na}(z)/n_{bulk}$",fontsize=14)
     # plt.ylabel("$n_{H}(z)/n_{bulk}$",fontsize=11,fontname="Times New Roman")
     
     # plt.legend()
-    plt.legend( prop={
-            'family': 'Times New Roman', "size": 7, 'stretch': 'normal'})    # plt.title('Classical, -0.4 eV',fontsize=12,fontname="Times New Roman")
-    plt.xticks(fontsize=11,fontname="Times New Roman")
-    plt.yticks(fontsize=11,fontname="Times New Roman")
+    # plt.legend( prop={
+            # 'family': 'Times New Roman', "size": 7, 'stretch': 'normal'})    # plt.title('Classical, -0.4 eV',fontsize=12,fontname="Times New Roman")
+    loc = plticker.MultipleLocator(base=2) # this locator puts ticks at regular intervals
+    ax.xaxis.set_major_locator(loc)
+    plt.xticks(fontsize=14)
+    plt.yticks(fontsize=14)
 
 # plt.plot(r, V, color="k", lw=1, ls="dashed")  # plot largest shaped V
 # plt.xlim([r.min(),r.max()])
