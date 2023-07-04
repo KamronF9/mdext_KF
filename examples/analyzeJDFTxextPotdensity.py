@@ -117,7 +117,9 @@ densityOrig = density
 
 AllDensities = np.array(AllDensities)
 AllDensitiesOrig = AllDensities
-AllDensitiesMean = np.mean(AllDensitiesOrig, axis=0)
+print(np.shape(AllDensities))
+AllDensitiesMean = np.mean(AllDensitiesOrig, axis=0).T
+print(np.shape(AllDensitiesMean))
 
 # save to HDF file
 
@@ -138,7 +140,7 @@ for i,atName in enumerate(np.unique(atNames)):
     # average densities over all timesteps
     # could Reject first 500 steps for equilibration :500
     # density = np.mean(densityOrig[:,i], axis=0)  # individual file density
-    density = AllDensitiesMean[i]  # all file density
+    density = AllDensitiesMean[:,i]  # all file density
 
     density = gaussian_filter1d(density, 3)
     plt.plot(z_mid, density, label=atName)
