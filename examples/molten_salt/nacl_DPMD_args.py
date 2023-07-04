@@ -73,7 +73,7 @@ def main() -> None:
         Pdamp=0.1,
     )
     # md.run(1, "equilibration")
-    md.run(2, "equilibration")
+    md.run(2, "equilibration")  # 2* 50*100 = 10 ps
     md.reset_stats()
     md.run(5, "collection", args.output_file)
 
