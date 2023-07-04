@@ -11,21 +11,28 @@ import matplotlib.pyplot as plt
 from scipy.ndimage import gaussian_filter1d
 from glob import glob
 import os
+import h5py
 
 Angstrom = 1/0.5291772
 z_edges = np.linspace(-10., 10., 201)
 z_mid = 0.5*(z_edges[:-1] + z_edges[1:])
 dz = z_edges[1] - z_edges[0]
 
+H5Fname = 'test-U+5.0.h'
+# H5Fname = 'test-U-5.0.h'
+
 # fs = sorted(glob('*jdftxout'))  # remember to change here !!!
-# fs = sorted(glob('md.o10782753'))  # remember to change here !!!
-# fs = sorted(glob('md.o1078xxxxx'))  # remember to change here !!!
-fs = sorted(glob('md.o*'))  # remember to change here !!!
+# fs = sorted(glob('md.o10782753'))  
+# fs = sorted(glob('md.o1078xxxxx'))  
+fs = sorted(glob('md.o*'))  # change first equilibration period to not have this name
 # fs = sorted(glob('NaClplanarNaU500Sig2.jdftxout'))  # remember to change here !!!
 # os.path.basename(glob('./Run4/*/NaCl*')[0])
-for inFile in fs:
+AllDensities = []  # collect densities from each file after equilibration
+
+for iFile,inFile in enumerate(fs):
 # for inFile in sys.argv[1:]:
-    #Read JDFTx input and convert to VASP
+    #Read JDFTx input
+    print(f'{inFile=}')
     nSteps = 0 #number of processed steps
     latvecActive = False #Whether reading lattice vectors
     stressActive = False #Whether reading stress tensor
@@ -90,8 +97,9 @@ for inFile in fs:
                     # print(i)
                     AtUniDensity.append(np.histogram(atpos[atUniqueInd[i], 2], z_edges)[0] / dz)
                     # density.append(np.histogram(atpos[:, 2], z_edges)[0] / dz)  
-                    # focus on the z dimension where the potential is applied along xy evenly
-                density.append(np.stack(AtUniDensity))
+                    # focus on the z dimension (2) where the potential is applied along xy evenly
+                density.append(np.stack(AtUniDensity)) # histogram bin values dimension 2 deep for 2 unique atom types in this case
+                AllDensities.append(np.stack(AtUniDensity))
                 nSteps += 1
                 
         if line.startswith('# Ionic positions in '):
@@ -100,25 +108,45 @@ for inFile in fs:
             atpos = np.zeros((nAtoms,3))
             atNames = []
             coordsType = line.split()[4]
-            
-    density = np.array(density)
-    densityOrig = density
-    density = densityOrig
-    
-    baseName = os.path.basename(inFile)[-2:]
-  
-    fig6 = plt.figure(6)
-    fig6.clear(True)
-    for i,atName in enumerate(np.unique(atNames)):
 
-        density = np.mean(densityOrig[:,i], axis=0)  #Reject first 500 steps for equilibration :500
-        density = gaussian_filter1d(density, 3) 
-        plt.plot(z_mid, density, label=atName)
-        plt.xlabel("z")
-        plt.ylabel("Density")        
-        # plt.xlim((-0.5,0.5))
-        # plt.ylim((0.,4))
-        plt.legend()
-        fig6.savefig('Plot_NaCl_dens_out_{}.png'.format(baseName))
-        
+
+# shifting below to be after all processing of files
+density = np.array(density)
+densityOrig = density
+# density = densityOrig ?
+
+AllDensities = np.array(AllDensities)
+AllDensitiesOrig = AllDensities
+AllDensitiesMean = np.mean(AllDensitiesOrig, axis=0)
+
+# save to HDF file
+
+with h5py.File(H5Fname, "w") as fp:
+                fp["r"] = z_mid
+                fp["n"] = AllDensitiesMean
+                # fp["V"] = self.force_callback.get_potential()
+                fp.attrs["T"] = 1300
+                # if self.P is not None:
+                fp.attrs["P"] = 1
+                # fp.attrs["geometry"] = self.force_callback.geometry_type.__name__
+
+# baseName = os.path.basename(inFile)[-2:]
+
+fig6 = plt.figure(6)
+fig6.clear(True)
+for i,atName in enumerate(np.unique(atNames)):
+    # average densities over all timesteps
+    # could Reject first 500 steps for equilibration :500
+    # density = np.mean(densityOrig[:,i], axis=0)  # individual file density
+    density = AllDensitiesMean[i]  # all file density
+
+    density = gaussian_filter1d(density, 3)
+    plt.plot(z_mid, density, label=atName)
+    plt.xlabel("z")
+    plt.ylabel("Density")        
+    # plt.xlim((-0.5,0.5))
+    # plt.ylim((0.,4))
+    plt.legend()
+    # fig6.savefig('Plot_NaCl_dens_out_{}.png'.format(baseName))
+    fig6.savefig('Plot_NaCl_dens_out_ALL.png')
 
