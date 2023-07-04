@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-# read in jdftxout file and produce a density profile plot 
+# To read in jdftxout file and produce a density profile plot 
+#
 # module load python
 # python /global/homes/k/kamron/mdext_KF/examples/analyzeJDFTxextPotdensity.py
 
@@ -17,9 +18,9 @@ z_mid = 0.5*(z_edges[:-1] + z_edges[1:])
 dz = z_edges[1] - z_edges[0]
 
 # fs = sorted(glob('*jdftxout'))  # remember to change here !!!
-fs = sorted(glob('md.o10782753'))  # remember to change here !!!
+# fs = sorted(glob('md.o10782753'))  # remember to change here !!!
 # fs = sorted(glob('md.o1078xxxxx'))  # remember to change here !!!
-# fs = sorted(glob('md.o*'))  # remember to change here !!!
+fs = sorted(glob('md.o*'))  # remember to change here !!!
 # fs = sorted(glob('NaClplanarNaU500Sig2.jdftxout'))  # remember to change here !!!
 # os.path.basename(glob('./Run4/*/NaCl*')[0])
 for inFile in fs:
