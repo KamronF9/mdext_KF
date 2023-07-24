@@ -48,6 +48,7 @@ def main() -> None:
         '-g', '--geometry', choices=geometry_map.keys(), required=True,
         help="1D symmetry of external potential",
     )
+    global args
     args = parser.parse_args()
 
     # Initialize and run simulation:
@@ -75,7 +76,7 @@ def setup(lmp: PyLammps, seed: int) -> int:
     """Setup initial atomic configuration and interaction potential."""
     
     # Construct water box:
-    L = [40.] * 3  # box dimensions
+    L = [11.6] * 3  # box dimensions *** aimd is 22*0.529ang=11.6
     file_liquid = "liquid.data"
     is_head = (MPI.COMM_WORLD.rank == 0)
     if is_head:
@@ -107,12 +108,15 @@ def setup(lmp: PyLammps, seed: int) -> int:
     lmp.set("type 2 charge +1")
     lmp.kspace_style("pppm 1e-5")
 
-    # Store Dump files for training
     
-
     # Initial minimize:
     log.info("Minimizing initial structure")
     lmp.minimize("1E-4 1E-6 10000 100000")
+    
+    # Dump output file - conflicts with the reset stats function above somehow
+    lmp.dump(f"write all custom 1000 pylammps{args.U0:+.1f}.dump id type element x y z")
+    lmp.dump_modify("write element Cl Na")
+
 
 
 if __name__ == "__main__":
