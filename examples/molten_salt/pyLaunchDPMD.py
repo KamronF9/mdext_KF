@@ -10,13 +10,14 @@ import numpy as np
 
 s = 1. # sigma width gaussian
 T = 1300. # kelvin
-P = 1. # pressue  XXXX overridden later to be none TODO clean up
+P = -1. # -1 is None
+# pressue  XXXX overridden later to be none TODO clean up
 p = 2 # atom type to apply the potential to (1-based)
 g = 'planar'
 
 
-endRange = 5.0
-stepSize = 0.5
+# endRange = 5.0
+# stepSize = 0.5
 
 # Ui=-0.4
 # sweep through potential amplitudes
@@ -28,8 +29,8 @@ for pot in pots:
     os.system(f'mkdir {pot}')
     os.chdir(f'{pot}')
     
-
-    for Ui in np.around(np.arange(0,endRange*2 + stepSize ,stepSize), decimals=1)-endRange:  
+    for Ui in [-5.0, 5.0]:      
+    # for Ui in np.around(np.arange(0,endRange*2 + stepSize ,stepSize), decimals=1)-endRange:  
         print(f"{Ui:+.1f}")
         o = f"test-U{Ui:+.1f}.h"
         log = o[:-3]+"_out"
