@@ -117,9 +117,9 @@ densityOrig = density
 
 AllDensities = np.array(AllDensities)
 AllDensitiesOrig = AllDensities
-print(np.shape(AllDensities))
+# print(np.shape(AllDensities))
 AllDensitiesMean = np.mean(AllDensitiesOrig, axis=0).T
-print(np.shape(AllDensitiesMean))
+# print(np.shape(AllDensitiesMean))
 
 # save to HDF file
 
