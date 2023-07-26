@@ -20,13 +20,18 @@ def main() -> None:
 
 
     # Parameter initialization update these if expanding
-    fig_name = 'MaxPotComparison_'  # include traceability here to training version
+    fig_name = 'MaxPotComparison_20ang_AllNPT'  # include traceability here to training version
     # fig_title = 'Simulation RDFs of NNP Potentials '
-    labels = ['FT', 'Standard NNP','Ext Pot NNP']  # legend labels
-    directs = [r'/home/kamron/mdext_KF/examples/molten_salt/data6Nima40angBMH/',
-                r'/home/kamron/mdext_KF/examples/molten_salt/data6Nima40angDPMDreg/',
-                r'/home/kamron/mdext_KF/examples/molten_salt/data6Nima40angDPMDpert/']
-                
+    # labels = ['FT', 'Standard NNP','Ext Pot NNP', 'AIMD']  # legend labels
+    # directs = [r'/home/kamron/mdext_KF/examples/molten_salt/data6Nima40angBMH/',
+    #             r'/home/kamron/mdext_KF/examples/molten_salt/data6Nima40angDPMDreg/',
+    #             r'/home/kamron/mdext_KF/examples/molten_salt/data6Nima40angDPMDpert/',
+    #             r'/home/kamron/mdext_KF/examples/molten_salt/data7AIMDpert/']
+    labels = ['FT', 'AIMD']  # legend labels
+    directs = [r'/home/kamron/mdext_KF/examples/molten_salt/data7_20AngBMH/',
+                r'/home/kamron/mdext_KF/examples/molten_salt/data7AIMDpert/']
+
+
     figLabel = ['a', 'b']
     # titles = []  # titles of filename/MD scenario
     # pattern = r'*dat'
@@ -62,11 +67,13 @@ def main() -> None:
                 #Bottom - repulsive
                 r,n = GetData(direct, 5.0)  # , potential eV
                 plt.ylim((0,4))
+                # plt.xlim((0,10))
                 
             else:
                 #Top - attractive
                 r,n = GetData(direct, -5.0)
                 plt.ylim((0,4))
+                # plt.xlim((0,10))
                 plt.xlabel("z [$\AA$]",fontsize=14)    
 
             plt.plot(r, n[:,particle]/N_bulk, label=labels[i])
@@ -80,10 +87,10 @@ def main() -> None:
 
         # ax.set_title(titles[j])
         ax.grid(True)
-        loc = plticker.MultipleLocator(base=2) # this locator puts ticks at regular intervals
-        ax.xaxis.set_major_locator(loc)
-        loc = plticker.MultipleLocator(base=0.5) # this locator puts ticks at regular intervals
-        ax.yaxis.set_major_locator(loc)
+        # loc = plticker.MultipleLocator(base=2) # this locator puts ticks at regular intervals
+        # ax.xaxis.set_major_locator(loc)
+        # loc = plticker.MultipleLocator(base=0.5) # this locator puts ticks at regular intervals
+        # ax.yaxis.set_major_locator(loc)
         # j-=1
     
     axs[0].legend()

@@ -8,11 +8,11 @@ import numpy as np
 
 # Loop over U in gaussian potential and launch jobs
 
-s = 1. # sigma width gaussian Ang
-T = 1300. # kelvin
-P = 1. # pressue  can be overridden later in nacl_bmh.py to be none TODO clean up
-p = 2 # atom type to apply the potential to (1-based)
-g = 'planar'
+# s = 1. # sigma width gaussian Ang
+# T = 1300. # kelvin
+# P = 1. # pressue  can be overridden later in nacl_bmh.py to be none TODO clean up
+# p = 2 # atom type to apply the potential to (1-based)
+# g = 'planar'
 
 # sweep through potential amplitudes option:
 # endRange = 5.0
@@ -25,12 +25,13 @@ g = 'planar'
 
 # for Ui in np.around(np.arange(0,endRange*2 + stepSize ,stepSize), decimals=1)-endRange:  
 # direct plug values in option
-for Ui in [-5.0, 5.0]:  
+for Ui in [-2.5, 2.5]:  
     print(f"{Ui:+.1f}")
-    o = f"test-U{Ui:+.1f}.h"
-    log = o[:-3]+"_out"
+    # o = f"test-U{Ui:+.1f}.h"
+    # log = o[:-3]+"_out"
 
-    os.system(f"sbatch ../nacl_bmh.job {Ui} {s} {T} {P} {p} {g} {o}")
+    os.system(f"sbatch ../spce.job {Ui}")
+    # os.system(f"sbatch ../water_spce.job {Ui} {s} {T} {P} {p} {g} {o}")
     # os.system(f"bash ../nacl_bmh.job {Ui} {s} {T} {P} {p} {g} {o} > {log} &")  
     # break
    

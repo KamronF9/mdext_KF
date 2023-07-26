@@ -9,11 +9,5 @@ module load pylammps
 
 #mpirun
 
-python ../nacl_bmh.py \
-	-U $1 \
-	-s $2 \
-	-T $3 \
-	-P $4 \
-	-p $5 \
-	-g $6 \
-	-o $7
+python ../spceNima20JUL23.py \
+	$1 \
