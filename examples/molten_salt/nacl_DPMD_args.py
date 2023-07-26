@@ -55,13 +55,19 @@ def main() -> None:
     
     global dpmdPotLine
     dpmdPotLine=f'deepmd ../{args.potential_filename}'
+
+    if args.pressure == -1.:
+        P=None
+    else:
+        P=args.pressure
     
     # Initialize and run simulation:
     md = mdext.md.MD(
         setup=setup,
         T=args.temperature,
-        P=None,
+        # P=None,
         # P=args.pressure,
+        P=P,
         seed=args.seed,
         potential=mdext.potential.Gaussian(args.U0, args.sigma),
         geometry_type=geometry_map[args.geometry],
@@ -82,7 +88,7 @@ def setup(lmp: PyLammps, seed: int) -> int:
     """Setup initial atomic configuration and interaction potential."""
     
     # Construct water box:
-    L = [40.] * 3  # box dimensions
+    L = [11.6.] * 3  # box dimensions
     file_liquid = "liquid.data"
     is_head = (MPI.COMM_WORLD.rank == 0)
     if is_head:

@@ -10,7 +10,8 @@ import numpy as np
 
 s = 1. # sigma width gaussian Ang
 T = 1300. # kelvin
-P = 1. # pressue  can be overridden later in nacl_bmh.py to be none TODO clean up
+P = -1. # -1 is None 
+# pressue  can be overridden later in nacl_bmh.py to be none TODO clean up.  Has to be float in nacl_bmh.py
 p = 2 # atom type to apply the potential to (1-based)
 g = 'planar'
 

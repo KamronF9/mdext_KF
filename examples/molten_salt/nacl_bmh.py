@@ -51,12 +51,18 @@ def main() -> None:
     global args
     args = parser.parse_args()
 
+    if args.pressure == -1.:
+        P=None
+    else:
+        P=args.pressure
+
     # Initialize and run simulation:
     md = mdext.md.MD(
         setup=setup,
         T=args.temperature,
         # P=args.pressure,
-        P=None,
+        # P=None,
+        P=P,
         seed=args.seed,
         potential=mdext.potential.Gaussian(args.U0, args.sigma),
         geometry_type=geometry_map[args.geometry],
@@ -114,8 +120,8 @@ def setup(lmp: PyLammps, seed: int) -> int:
     lmp.minimize("1E-4 1E-6 10000 100000")
     
     # Dump output file - conflicts with the reset stats function above somehow
-    lmp.dump(f"write all custom 1000 pylammps{args.U0:+.1f}.dump id type element x y z")
-    lmp.dump_modify("write element Cl Na")
+    # lmp.dump(f"write all custom 1000 pylammps{args.U0:+.1f}.dump id type element x y z")
+    # lmp.dump_modify("write element Cl Na")
 
 
 
