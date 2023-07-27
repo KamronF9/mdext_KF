@@ -95,7 +95,9 @@ for iFile,inFile in enumerate(fs):
                     
                 for i in range(len(np.unique(atNames))):
                     # print(i)
-                    AtUniDensity.append(np.histogram(atpos[atUniqueInd[i], 2], z_edges)[0] / dz)
+                    AtUniDensity.append(np.histogram(atpos[atUniqueInd[i], 2], z_edges)[0] / (dz*R[0,0]*R[1,1]))
+                    # need to scale the density to the volume to be inline with mdext
+                    # AtUniDensity.append(np.histogram(atpos[atUniqueInd[i], 2], z_edges)[0] / dz)
                     # density.append(np.histogram(atpos[:, 2], z_edges)[0] / dz)  
                     # focus on the z dimension (2) where the potential is applied along xy evenly
                 density.append(np.stack(AtUniDensity)) # histogram bin values dimension 2 deep for 2 unique atom types in this case
@@ -129,7 +131,7 @@ with h5py.File(H5Fname, "w") as fp:
                 # fp["V"] = self.force_callback.get_potential()
                 fp.attrs["T"] = 1300
                 # if self.P is not None:
-                fp.attrs["P"] = 1
+                fp.attrs["P"] = -1 # none doesn't work
                 # fp.attrs["geometry"] = self.force_callback.geometry_type.__name__
 
 # baseName = os.path.basename(inFile)[-2:]

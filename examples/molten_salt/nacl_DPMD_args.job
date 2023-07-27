@@ -11,7 +11,8 @@
 module load python
 conda activate pylammps9
 
-python ../nacl_DPMD_args.py \
+#python ../nacl_DPMD_args.py \
+python ../../nacl_DPMD_args.py \
     -U $1 \
     -s $2 \
     -T $3 \
