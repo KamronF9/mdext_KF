@@ -54,7 +54,8 @@ def main() -> None:
     args = parser.parse_args()
     
     global dpmdPotLine
-    dpmdPotLine=f'deepmd ../{args.potential_filename}'
+    # dpmdPotLine=f'deepmd ../{args.potential_filename}'
+    dpmdPotLine=f'deepmd ../../{args.potential_filename}'
 
     if args.pressure == -1.:
         P=None
@@ -88,7 +89,7 @@ def setup(lmp: PyLammps, seed: int) -> int:
     """Setup initial atomic configuration and interaction potential."""
     
     # Construct water box:
-    L = [11.6.] * 3  # box dimensions
+    L = [11.6] * 3  # box dimensions
     file_liquid = "liquid.data"
     is_head = (MPI.COMM_WORLD.rank == 0)
     if is_head:
@@ -128,6 +129,10 @@ def setup(lmp: PyLammps, seed: int) -> int:
     lmp.minimize("1E-4 1E-6 10000 100000")
     # no dump if resetting stats for plotting
     # lmp.dump(f'write all custom 100 pylammps.dump id type x y z vx vy vz')
+
+    # Dump output file - conflicts with the reset stats function above somehow
+    # lmp.dump(f"write all custom 1000 pylammps{args.U0:+.1f}.dump id type element x y z")
+    # lmp.dump_modify("write element Cl Na")
 
 
 if __name__ == "__main__":

@@ -2,16 +2,15 @@ import os
 from unicodedata import decimal
 import numpy as np
 
-# nohup python ../pyLaunch.py > out &
+# nohup python ../pyLaunchDPMD.py > out &
 # nohup bash ../nacl_bmh.job > out &
 
 
 # Loop over U in gaussian potential and launch jobs
 
-s = 1. # sigma width gaussian
+s = 0.529 # sigma width gaussian
 T = 1300. # kelvin
-P = -1. # -1 is None
-# pressue  XXXX overridden later to be none TODO clean up
+P = -1. # -1 is None = NVT, else it takes on the value of P = NPT
 p = 2 # atom type to apply the potential to (1-based)
 g = 'planar'
 
@@ -37,7 +36,8 @@ for pot in pots:
 
         # orig deepmd
         # os.system(f"bash ../nacl_DPMD_args.job {Ui} {s} {T} {P} {p} {g} {o} {pot}.pb")
-        os.system(f"sbatch ../nacl_DPMD_args.job {Ui} {s} {T} {P} {p} {g} {o} {pot}.pb")
+        # os.system(f"sbatch ../nacl_DPMD_args.job {Ui} {s} {T} {P} {p} {g} {o} {pot}.pb")
+        os.system(f"sbatch ../../nacl_DPMD_args.job {Ui} {s} {T} {P} {p} {g} {o} {pot}.pb")
         # os.system(f"bash ../nacl_bmh.job {Ui} {s} {T} {P} {p} {g} {o}")  #  > {log} &
         # break
    
