@@ -20,16 +20,18 @@ def main() -> None:
 
 
     # Parameter initialization update these if expanding
-    fig_name = 'MaxPotComparison_20ang_AllNPT'  # include traceability here to training version
+    fig_name = 'MaxPotComparison_12ang_AllNVT_nacl_data8'  # include traceability here to training version
     # fig_title = 'Simulation RDFs of NNP Potentials '
     # labels = ['FT', 'Standard NNP','Ext Pot NNP', 'AIMD']  # legend labels
     # directs = [r'/home/kamron/mdext_KF/examples/molten_salt/data6Nima40angBMH/',
     #             r'/home/kamron/mdext_KF/examples/molten_salt/data6Nima40angDPMDreg/',
     #             r'/home/kamron/mdext_KF/examples/molten_salt/data6Nima40angDPMDpert/',
     #             r'/home/kamron/mdext_KF/examples/molten_salt/data7AIMDpert/']
-    labels = ['FT', 'AIMD']  # legend labels
-    directs = [r'/home/kamron/mdext_KF/examples/molten_salt/data7_20AngBMH/',
-                r'/home/kamron/mdext_KF/examples/molten_salt/data7AIMDpert/']
+    labels = ['Classical (Fumi-Tosi)', 'NNP', 'NNP-ext', 'AIMD']  # legend labels
+    directs = [r'/home/kamron/mdext_KF/examples/molten_salt/data8_12AngBMHNVTH5s/',
+                r'/home/kamron/mdext_KF/examples/molten_salt/data8_12AngNVT_NNP_H5s_fromPM/PBED2NaClTrain1AllTraining/',
+                r'/home/kamron/mdext_KF/examples/molten_salt/data8_12AngNVT_NNP_H5s_fromPM/D2ClNaPerturbTrain7r11/',
+                r'/home/kamron/mdext_KF/examples/molten_salt/data8_Long2NVT_AIMD_12ang_PM_184mH_/']
 
 
     figLabel = ['a', 'b']
@@ -66,14 +68,14 @@ def main() -> None:
             if ax_ind == 0:
                 #Bottom - repulsive
                 r,n = GetData(direct, 5.0)  # , potential eV
-                plt.ylim((0,4))
-                # plt.xlim((0,10))
+                plt.ylim((0,5))
+                plt.xlim((0,6))
                 
             else:
                 #Top - attractive
                 r,n = GetData(direct, -5.0)
-                plt.ylim((0,4))
-                # plt.xlim((0,10))
+                plt.ylim((0,5))
+                plt.xlim((0,6))
                 plt.xlabel("z [$\AA$]",fontsize=14)    
 
             plt.plot(r, n[:,particle]/N_bulk, label=labels[i])
@@ -99,37 +101,37 @@ def main() -> None:
 
     fig.savefig(fig_name+'combo.pdf', bbox_inches='tight')
     
-    sys.exit(0)
+    # sys.exit(0)
 
     # Repulsive
     # plt.figure(figsize=(8,6), dpi=300)
 #----------------
-    for i, direct in enumerate(directs):
-        r,n = GetData(direct, 5.0)
-        plt.plot(r, n[:,particle]/N_bulk, label=labels[i])
-        plt.ylim((0,4))
-        plt.legend()
-        plt.xlabel("z [$\AA$]",fontsize=11,fontname="Times New Roman")
-        plt.ylabel("$n_{Na}(z)/n_{bulk}$",fontsize=11,fontname="Times New Roman")
+    # for i, direct in enumerate(directs):
+    #     r,n = GetData(direct, 5.0)
+    #     plt.plot(r, n[:,particle]/N_bulk, label=labels[i])
+    #     plt.ylim((0,4))
+    #     plt.legend()
+    #     plt.xlabel("z [$\AA$]",fontsize=11,fontname="Times New Roman")
+    #     plt.ylabel("$n_{Na}(z)/n_{bulk}$",fontsize=11,fontname="Times New Roman")
 
-    plt.savefig(fig_name+'attract.pdf', bbox_inches='tight')
-
-
-
-    plt.figure(figsize=(8,6), dpi=300)
-
-    for i, direct in enumerate(directs):
-        r,n = GetData(direct, -5.0)
-        plt.plot(r, n[:,particle]/N_bulk, label=labels[i])
-        plt.ylim((0,4))
-        plt.legend()
-        plt.xlabel("z [$\AA$]",fontsize=11,fontname="Times New Roman")
-        plt.ylabel("$n_{Na}(z)/n_{bulk}$",fontsize=11,fontname="Times New Roman")
-
-    plt.savefig(fig_name+'repulse.pdf', bbox_inches='tight', dpi=300)
+    # plt.savefig(fig_name+'attract.pdf', bbox_inches='tight')
 
 
-    plt.figure(figsize=(8,6), dpi=300)
+
+    # plt.figure(figsize=(8,6), dpi=300)
+
+    # for i, direct in enumerate(directs):
+    #     r,n = GetData(direct, -5.0)
+    #     plt.plot(r, n[:,particle]/N_bulk, label=labels[i])
+    #     plt.ylim((0,4))
+    #     plt.legend()
+    #     plt.xlabel("z [$\AA$]",fontsize=11,fontname="Times New Roman")
+    #     plt.ylabel("$n_{Na}(z)/n_{bulk}$",fontsize=11,fontname="Times New Roman")
+
+    # plt.savefig(fig_name+'repulse.pdf', bbox_inches='tight', dpi=300)
+
+
+    # plt.figure(figsize=(8,6), dpi=300)
 
 
 

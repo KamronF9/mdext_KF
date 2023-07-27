@@ -8,7 +8,7 @@ import numpy as np
 
 # Loop over U in gaussian potential and launch jobs
 
-s = 1. # sigma width gaussian Ang
+s = 0.529 # sigma width gaussian Ang
 T = 1300. # kelvin
 P = -1. # -1 is None 
 # pressue  can be overridden later in nacl_bmh.py to be none TODO clean up.  Has to be float in nacl_bmh.py
