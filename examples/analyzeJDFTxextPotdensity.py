@@ -14,9 +14,11 @@ import os
 import h5py
 
 Angstrom = 1/0.5291772
-z_edges = np.linspace(-10., 10., 201)
+bins = 200
+z_edges = np.linspace(-10., 10., bins+1)
 z_mid = 0.5*(z_edges[:-1] + z_edges[1:])
 dz = z_edges[1] - z_edges[0]
+
 
 H5Fname = 'test-U+5.0.h'
 # H5Fname = 'test-U-5.0.h'
@@ -95,12 +97,27 @@ for iFile,inFile in enumerate(fs):
                     
                 for i in range(len(np.unique(atNames))):
                     # print(i)
-                    AtUniDensity.append(np.histogram(atpos[atUniqueInd[i], 2], z_edges)[0] / (dz*R[0,0]*R[1,1]))
+                    AtUniDensityTwoSide = np.histogram(atpos[atUniqueInd[i], 2], z_edges)[0] / (dz*R[0,0]*R[1,1])
+                    # print(f'{len(AtUniDensityTwoSide)=}') #200
+                    # plt.plot(z_mid, AtUniDensityTwoSide)
+                    # plt.savefig('test1.png')
+                    # plt.plot(z_mid[-int(bins/2):], np.flip(AtUniDensityTwoSide[:int(bins/2)]))
+                    # plt.plot(z_mid[-int(bins/2):], AtUniDensityTwoSide[-int(bins/2):])
+                    # plt.savefig('test2.png')
+                    # sys.exit(0)
+                    AtUniDensityOneSide = (np.flip(AtUniDensityTwoSide[:int(bins/2)])+AtUniDensityTwoSide[-int(bins/2):])*0.5
+                    # print(f'{len(AtUniDensityOneSide)=}') # 100
+                    # print(z_mid[-int(bins/2):])
+                    # print(np.flip(z_mid[:int(bins/2)]))
+                    # sys.exit(0)
+                    AtUniDensity.append(AtUniDensityOneSide)
                     # need to scale the density to the volume to be inline with mdext
                     # AtUniDensity.append(np.histogram(atpos[atUniqueInd[i], 2], z_edges)[0] / dz)
                     # density.append(np.histogram(atpos[:, 2], z_edges)[0] / dz)  
                     # focus on the z dimension (2) where the potential is applied along xy evenly
-                density.append(np.stack(AtUniDensity)) # histogram bin values dimension 2 deep for 2 unique atom types in this case
+                # Reflect densities about 0 and average them
+                
+                # density.append(np.stack(AtUniDensity)) # histogram bin values dimension 2 deep for 2 unique atom types in this case
                 AllDensities.append(np.stack(AtUniDensity))
                 nSteps += 1
                 
@@ -110,11 +127,12 @@ for iFile,inFile in enumerate(fs):
             atpos = np.zeros((nAtoms,3))
             atNames = []
             coordsType = line.split()[4]
+    # if iFile==1: break
 
 
 # shifting below to be after all processing of files
-density = np.array(density)
-densityOrig = density
+# density = np.array(density)
+# densityOrig = density
 # density = densityOrig ?
 
 AllDensities = np.array(AllDensities)
@@ -125,8 +143,9 @@ AllDensitiesMean = np.mean(AllDensitiesOrig, axis=0).T
 
 # save to HDF file
 
+
 with h5py.File(H5Fname, "w") as fp:
-                fp["r"] = z_mid
+                fp["r"] = z_mid[-int(bins/2):]
                 fp["n"] = AllDensitiesMean
                 # fp["V"] = self.force_callback.get_potential()
                 fp.attrs["T"] = 1300
@@ -143,9 +162,11 @@ for i,atName in enumerate(np.unique(atNames)):
     # could Reject first 500 steps for equilibration :500
     # density = np.mean(densityOrig[:,i], axis=0)  # individual file density
     density = AllDensitiesMean[:,i]  # all file density
-
-    density = gaussian_filter1d(density, 3)
-    plt.plot(z_mid, density, label=atName)
+    # print(len(density))
+    # print(z_mid[-int(bins/2):])
+    
+    # density = gaussian_filter1d(density, 3)
+    plt.plot(z_mid[-int(bins/2):], density, label=atName)
     plt.xlabel("z")
     plt.ylabel("Density")        
     # plt.xlim((-0.5,0.5))
