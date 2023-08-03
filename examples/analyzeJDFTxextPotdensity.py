@@ -139,6 +139,7 @@ AllDensities = np.array(AllDensities)
 AllDensitiesOrig = AllDensities
 # print(np.shape(AllDensities))
 AllDensitiesMean = np.mean(AllDensitiesOrig, axis=0).T
+AllDensitiesStd = np.std(AllDensitiesOrig, axis=0).T
 # print(np.shape(AllDensitiesMean))
 
 # save to HDF file
@@ -147,6 +148,7 @@ AllDensitiesMean = np.mean(AllDensitiesOrig, axis=0).T
 with h5py.File(H5Fname, "w") as fp:
                 fp["r"] = z_mid[-int(bins/2):]
                 fp["n"] = AllDensitiesMean
+                fp["std"] = AllDensitiesStd
                 # fp["V"] = self.force_callback.get_potential()
                 fp.attrs["T"] = 1300
                 # if self.P is not None:
@@ -162,11 +164,14 @@ for i,atName in enumerate(np.unique(atNames)):
     # could Reject first 500 steps for equilibration :500
     # density = np.mean(densityOrig[:,i], axis=0)  # individual file density
     density = AllDensitiesMean[:,i]  # all file density
+    err = AllDensitiesStd[:,i]
     # print(len(density))
     # print(z_mid[-int(bins/2):])
-    
     # density = gaussian_filter1d(density, 3)
-    plt.plot(z_mid[-int(bins/2):], density, label=atName)
+    x = z_mid[-int(bins/2):]
+    plt.plot(x, density, label=atName)
+    plt.fill_between(x, density-err, density+err,facecolor='r',alpha=0.5)
+
     plt.xlabel("z")
     plt.ylabel("Density")        
     # plt.xlim((-0.5,0.5))
