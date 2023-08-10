@@ -73,6 +73,7 @@ def main() -> None:
         Tdamp=0.1,
         Pdamp=0.1,
     )
+    # md.run(2, "collection", args.output_file)
     md.run(2, "equilibration")
     md.reset_stats()
     md.run(5, "collection", args.output_file)
