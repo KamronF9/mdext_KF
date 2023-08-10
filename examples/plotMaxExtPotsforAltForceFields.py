@@ -20,18 +20,22 @@ def main() -> None:
 
 
     # Parameter initialization update these if expanding
-    fig_name = 'MaxPotComparison_12ang_AllNVT_nacl_data8'  # include traceability here to training version
+    # fig_name = 'test'
+    fig_name = 'MaxPotComparison_12ang_AllNVT_nacl_data8_1ANG'  # include traceability here to training version
     # fig_title = 'Simulation RDFs of NNP Potentials '
     # labels = ['FT', 'Standard NNP','Ext Pot NNP', 'AIMD']  # legend labels
     # directs = [r'/home/kamron/mdext_KF/examples/molten_salt/data6Nima40angBMH/',
     #             r'/home/kamron/mdext_KF/examples/molten_salt/data6Nima40angDPMDreg/',
     #             r'/home/kamron/mdext_KF/examples/molten_salt/data6Nima40angDPMDpert/',
     #             r'/home/kamron/mdext_KF/examples/molten_salt/data7AIMDpert/']
+    # labels = [ 'NNP1','NNP0.5' ]  # legend labels
     labels = ['Classical (Fumi-Tosi)', 'NNP', 'NNP-ext', 'AIMD']  # legend labels
-    directs = [r'/home/kamron/mdext_KF/examples/molten_salt/data8_12AngBMHNVTH5s/',
-                r'/home/kamron/mdext_KF/examples/molten_salt/data8_12AngNVT_NNP_H5s_fromPM/PBED2NaClTrain1AllTraining/',
-                r'/home/kamron/mdext_KF/examples/molten_salt/data8_12AngNVT_NNP_H5s_fromPM/D2ClNaPerturbTrain7r11/',
-                r'/home/kamron/mdext_KF/examples/molten_salt/data8_Long2NVT_AIMD_12ang_PM_184mH_/']
+    # labels = ['NNP', 'NNP-ext', 'AIMD']  # legend labels
+    directs = [
+        r'/home/kamron/mdext_KF/examples/molten_salt/data8_12AngBMHNVTH5s1ANG/',
+        r'/home/kamron/mdext_KF/examples/molten_salt/data8_12AngNVT_NNP_H5s_fromPM_1ANG/PBED2NaClTrain1AllTraining/',
+        r'/home/kamron/mdext_KF/examples/molten_salt/data8_12AngNVT_NNP_H5s_fromPM_1ANG/D2ClNaPerturbTrain7r11/',
+        r'/home/kamron/mdext_KF/examples/molten_salt/data8_Long3NVT_AIMD_12ang_PM_184mH_1ANG/']
 
 
     figLabel = ['a', 'b']
@@ -50,9 +54,13 @@ def main() -> None:
         with h5py.File(direct+f"test-U{extPot:+.1f}.h", "r") as fp:
             r = np.array(fp["r"])
             n = np.array(fp["n"])
+            try:
+                errs = np.array(fp["std"])
+            except:
+                errs = np.zeros_like(n)
             # V = np.array(fp["V"])
 
-        return r, n  # list containing 2D layers of each scenario
+        return r, n, errs  # list containing 2D layers of each scenario
 
     
     fig, axs = plt.subplots(2, 1, figsize=(5, 7), dpi=300, sharex=True)
@@ -67,18 +75,20 @@ def main() -> None:
             plt.sca(ax)
             if ax_ind == 0:
                 #Bottom - repulsive
-                r,n = GetData(direct, 5.0)  # , potential eV
+                r,n,errs = GetData(direct, 5.0)  # , potential eV
                 plt.ylim((0,5))
-                plt.xlim((0,6))
+                plt.xlim((0,5.5))
                 
             else:
                 #Top - attractive
-                r,n = GetData(direct, -5.0)
+                r,n,errs = GetData(direct, -5.0)
                 plt.ylim((0,5))
                 plt.xlim((0,6))
                 plt.xlabel("z [$\AA$]",fontsize=14)    
-
-            plt.plot(r, n[:,particle]/N_bulk, label=labels[i])
+            density = n[:,particle]/N_bulk
+            err = errs[:,particle]/N_bulk*2 # set to 2sigma
+            plt.plot(r, density, label=labels[i])
+            plt.fill_between(r, density-err, density+err,facecolor='b',alpha=0.5)
             plt.text(-0.2, 1.01, f"({figLabel[ax_ind]})", ha="left", va="top",
                 transform=ax.transAxes, fontsize="large", fontweight="bold")
             

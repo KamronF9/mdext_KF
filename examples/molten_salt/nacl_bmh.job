@@ -16,4 +16,5 @@ python ../nacl_bmh.py \
 	-P $4 \
 	-p $5 \
 	-g $6 \
-	-o $7
+	-o $7 \
+	-S $8

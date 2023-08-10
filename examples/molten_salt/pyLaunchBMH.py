@@ -8,7 +8,7 @@ import numpy as np
 
 # Loop over U in gaussian potential and launch jobs
 
-s = 0.529 # sigma width gaussian Ang
+s = 1. # sigma width gaussian Ang
 T = 1300. # kelvin
 P = -1. # -1 is None = NVT, else it takes on the value of P = NPT
 p = 2 # atom type to apply the potential to (1-based)
