@@ -1,4 +1,10 @@
 #!/bin/bash
 #SBATCH -p cpu -N 1 -n 16 -c 1 --hint=nomultithread -o test.out -t 10
 
+module purge
+#module load venv/mdext
+module load venv/mdextKF
+module load openmpi
+module load pylammps
+
 mpirun python lj.py

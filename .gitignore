@@ -1,6 +1,6 @@
 # Byte-compiled / optimized / DLL files
 __pycache__/
-*.py[cod]
+# *.py[cod]
 *$py.class
 
 # C extensions
@@ -47,7 +47,7 @@ htmlcov/
 nosetests.xml
 coverage.xml
 *.cover
-*.py,cover
+# *.py,cover
 .hypothesis/
 .pytest_cache/
 
@@ -131,6 +131,12 @@ dmypy.json
 # LAMMPS and simulation outputs
 log.lammps
 *.h5
+*.h
 *.out
 liquid.data
-
+*.pb
+*.dump
+*.pdf
+*.zip
+out*
+variable.o*

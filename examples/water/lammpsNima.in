@@ -1,0 +1,70 @@
+# bulk water
+# ------------------------ INITIALIZATION ----------------------------
+
+units           metal
+boundary        p p p
+atom_style      atomic
+
+neighbor        2.0 bin
+neigh_modify    every 10 delay 0 check no
+
+# ----------------------- ATOM DEFINITION ----------------------------
+
+read_data	lammps-small
+mass 		1 1.01410178  
+mass		2 15.9994
+
+# SPC-E
+#group ox type 1
+#group hy type 2
+#set group ox charge -0.8476
+#set group hy charge 0.4238
+#kspace_style pppm 1.0e-5
+# ------------------------ FORCE FIELDS ------------------------------
+
+plugin load libdeepmd_lmp.so
+pair_style  deepmd H1O2WaterTrain1.pb
+pair_coeff  * *
+  
+
+# ------------------------- SETTINGS ---------------------------------
+variable dt equal 0.0005 # 0.5 fs
+variable Tdamp equal 1000*${dt}
+variable Pdamp equal 100*${dt}
+
+# ------------------------- EQUILIBRATION ---------------------------------
+
+#compute 1       all pressure thermo_temp
+thermo          1
+thermo_style    custom step temp pe ke etotal press vol density lx ly lz
+
+#reset_timestep	0
+timestep        ${dt}
+velocity        all create 330.0 123456789
+#fix 1   all npt temp 330.0 330.0 ${Tdamp} aniso 1 1 ${Pdamp}
+fix 1   all nvt temp 330.0 330.0 ${Tdamp} 
+
+
+dump            1 all custom 1 water.dump id type element x y z fx fy fz
+dump_modify     1 element H O
+
+run             1000 # 50fs
+#write_restart   water.restart
+
+
+thermo          1
+thermo_style    custom step pe vol press temp 
+thermo_modify	norm no
+
+
+timestep            0.0005  # 0.5fs
+
+velocity            all create 500.0 52345
+fix                 0 all nvt temp 500. 500. $(100.0*dt)
+
+#velocity            all create 100.0 52345
+#fix                 0 all nve
+
+dump                0 all custom 1 ${pot}OOljOn.dump id type element x y z fx fy fz
+dump_modify         0 element Ag C F H O S
+run                 10000  #50ps
