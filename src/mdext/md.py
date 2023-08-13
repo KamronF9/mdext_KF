@@ -144,8 +144,10 @@ class MD:
         if P is None:
             lmp.fix(f"Ensemble all nvt temp {T} {T} {Tdamp}")
         else:
-            # planar geometry apply pressure in Z only
-            # cylidrical geometry apply pressure in X Y 
+            # planar geometry apply pressure in Z only and fix X Y
+            print(geometry_type.__name__)
+            # if geometry_type == 
+            # cylidrical geometry apply pressure in X Y and fix Z
             # spherical (done)
             lmp.fix(f"Ensemble all npt temp {T} {T} {Tdamp} iso {P} {P} {Pdamp}")
 
