@@ -32,7 +32,7 @@ def main() -> None:
     # First dir sets all the titles up so be sure to have the same dat files in the second dir
 
 
-    os.chdir(r'/home/kamron/mdext_KF/examples/molten_salt/data9seedtestBMH12NVTH5s/') 
+    # os.chdir(r'/home/kamron/mdext_KF/examples/molten_salt/data9seedtestBMH12NVTH5s/') 
 
     def GetData(pathAndFilename):
 
