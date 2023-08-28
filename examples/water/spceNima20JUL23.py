@@ -10,8 +10,8 @@ def main() -> None:
     # Current simulation parameters:
     T = 298.0  # K
     P = None  # atm
-    seed = 345
-    U0 = (float(sys.argv[1]))*23.06   # Amplitude of the external potential (kcal/mol)
+    seed = 345s
+    U0 = (float(ys.argv[1]))*23.06   # Amplitude of the external potential (kcal/mol)
     sigma = 1.0 # Width of the external potential (A)
     global jj
     jj=float(sys.argv[1]) # eV
