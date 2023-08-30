@@ -1,6 +1,7 @@
 import os
 from unicodedata import decimal
 import numpy as np
+import random
 
 # nohup python ../pyLaunchDPMD.py > out &
 # nohup bash ../nacl_bmh.job > out &
@@ -28,16 +29,18 @@ for pot in pots:
     os.system(f'mkdir {pot}')
     os.chdir(f'{pot}')
     
-    for Ui in [-5.0, 5.0]:      
-    # for Ui in np.around(np.arange(0,endRange*2 + stepSize ,stepSize), decimals=1)-endRange:  
-        print(f"{Ui:+.1f}")
-        o = f"test-U{Ui:+.1f}.h"
+    for seedi in range(5):
+        
+        S = str(random.randint(1,1000))
+        Ui = -5.0
+        print(f"{Ui:+.1f}_seed{seedi}")
+        o = f"test-U{Ui:+.1f}_seed{seedi}.h"
         log = o[:-3]+"_out"
 
         # orig deepmd
         # os.system(f"bash ../nacl_DPMD_args.job {Ui} {s} {T} {P} {p} {g} {o} {pot}.pb")
         # os.system(f"sbatch ../nacl_DPMD_args.job {Ui} {s} {T} {P} {p} {g} {o} {pot}.pb")
-        os.system(f"sbatch ../../nacl_DPMD_args.job {Ui} {s} {T} {P} {p} {g} {o} {pot}.pb")
+        os.system(f"sbatch ../../nacl_DPMD_args.job {Ui} {s} {T} {P} {p} {g} {o} {pot}.pb {S}")
         # os.system(f"bash ../nacl_bmh.job {Ui} {s} {T} {P} {p} {g} {o}")  #  > {log} &
         # break
    

@@ -20,7 +20,8 @@ python ../../nacl_DPMD_args.py \
     -p $5 \
     -g $6 \
     -o $7 \
-    --potential_filename $8
+    --potential_filename $8 \
+    -S $9
     
     
 

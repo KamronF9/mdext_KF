@@ -138,8 +138,10 @@ for iFile,inFile in enumerate(fs):
 AllDensities = np.array(AllDensities)
 AllDensitiesOrig = AllDensities
 # print(np.shape(AllDensities))
+
+samples = iFile + 1 #last index of file (0 base) + 1
 AllDensitiesMean = np.mean(AllDensitiesOrig, axis=0).T
-AllDensitiesStd = np.std(AllDensitiesOrig, axis=0).T
+AllDensitiesStd = np.std(AllDensitiesOrig, axis=0).T/np.sqrt(samples) # standard error
 # print(np.shape(AllDensitiesMean))
 
 # save to HDF file
