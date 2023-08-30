@@ -9,7 +9,7 @@ import sys
 def main() -> None:
 
     # Current simulation parameters (all in LJ units):
-    T = float(sys.argv[1])  # in LJ epsilon
+    T = 1.  # was 0.7 in LJ epsilon
     P = 1.0  # in LJ epsilon/sigma^2
     seed = 12345
     U0 = 0.0  # Amplitude of the external potential (in LJ epsilon)
@@ -34,7 +34,7 @@ def main() -> None:
     )
     md.run(10, "equilibration")  # 10* 50*100 = 50 ps
     md.reset_stats()
-    md.run(40, "collection", f"testTemp{T}.h5")
+    md.run(40, "collection", f"testTemp{float(sys.argv[1])}.h5")
 
 
 def setup(lmp: PyLammps, seed: int) -> int:
@@ -43,12 +43,15 @@ def setup(lmp: PyLammps, seed: int) -> int:
     # Construct simulation box:
     Lz = 30.  # only box dimension that matters
     L = np.array([1., 1., Lz])  # overall box dimensions
+
     lmp.region(
         f"sim_box block -{L[0]/2} {L[0]/2} -{L[1]/2} {L[1]/2} -{Lz/2} {Lz/2}"
         " units box"
     )
     lmp.create_box("1 sim_box")
-    n_bulk = 0.7   # in LJ 1/sigma
+    n_bulk = float(sys.argv[1]) # was 0.7   # in LJ 1/sigma
+
+    lmp.log(f'{n_bulk}_n.log')
     n_atoms = int(np.round(n_bulk * Lz))
     lmp.region(f"atom_box block -0.0 0.0 -0.0 0.0 -{Lz/2} {Lz/2} units box")
     lmp.create_atoms(f"1 random {n_atoms} {seed} atom_box")

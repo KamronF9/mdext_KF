@@ -20,19 +20,25 @@ import numpy as np
 
 # Ui=-0.4
 
-stepSize = 0.2
+stepSize = 0.1
     
 
 # for Ui in np.around(np.arange(0,endRange*2 + stepSize ,stepSize), decimals=1)-endRange:  
 # direct plug values in option
 # for Ui in [-2.5, 2.5]:  
-for Temp in np.around(np.arange(0,2+stepSize,stepSize),decimals=1):
+for Density in np.around(np.arange(0,2+stepSize,stepSize),decimals=1):
 
     # print(f"{Ui:+.1f}")
     # o = f"test-U{Ui:+.1f}.h"
     # log = o[:-3]+"_out"
 
-    os.system(f"sbatch ../LJsweep.job {Temp}")
+    os.system(f"sbatch ../LJsweep.job {Density}") # parallel
+
+    # serial
+    # os.system(f"bash ../LJsweep.job {Density}") 
+    # os.system(f'python ../../../parseLammpsLogMdext.py -i log.lammps')
+    # os.system(f'mv log.csv {Density}.csv')
+
     # os.system(f"sbatch ../water_spce.job {Ui} {s} {T} {P} {p} {g} {o}")
     # os.system(f"bash ../nacl_bmh.job {Ui} {s} {T} {P} {p} {g} {o} > {log} &")  
     # break
