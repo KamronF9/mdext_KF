@@ -70,5 +70,5 @@ for idx in range(len(datastart_idxs)): # index of indices
                 data.append(purge(d.split(' ')))
 
 df = pd.DataFrame(data, columns=header)
-outfile = infile[:-6] + '.csv'
+outfile = infile[:-4] + '.csv'
 df.to_csv(outfile)

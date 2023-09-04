@@ -1,5 +1,5 @@
 #!/bin/bash
-# start in the sweep
+# start in the N=
 # parseLammpsLogMdext.sh
 
 
@@ -11,5 +11,5 @@ for f in *.log; do
 
     # mv ${f}.jdftxout ../jdftxouts/
 
-    python ../../../parseLammpsLogMdext.py -i $f
+    python ../../../../parseLammpsLogMdext.py -i $f
 done

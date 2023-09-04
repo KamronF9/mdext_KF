@@ -26,22 +26,41 @@ stepSize = 0.1
 # for Ui in np.around(np.arange(0,endRange*2 + stepSize ,stepSize), decimals=1)-endRange:  
 # direct plug values in option
 # for Ui in [-2.5, 2.5]:  
-for Density in np.around(np.arange(0,2+stepSize,stepSize),decimals=1):
+for temperature in np.around(np.arange(1.1,3+stepSize,stepSize),decimals=1): 
+    dirName = f'T={temperature}'
+    os.system(f'mkdir {dirName}')
+    os.chdir(dirName)
 
-    # print(f"{Ui:+.1f}")
-    # o = f"test-U{Ui:+.1f}.h"
-    # log = o[:-3]+"_out"
+    for pressure in np.around(np.arange(0.1,1+stepSize,stepSize),decimals=1):
 
-    os.system(f"sbatch ../LJsweep.job {Density}") # parallel
+        # print(f"{Ui:+.1f}")
+        # o = f"test-U{Ui:+.1f}.h"
+        # log = o[:-3]+"_out"
 
-    # serial
-    # os.system(f"bash ../LJsweep.job {Density}") 
-    # os.system(f'python ../../../parseLammpsLogMdext.py -i log.lammps')
-    # os.system(f'mv log.csv {Density}.csv')
+        # os.system(f"sbatch ../LJsweep.job {Density}") # parallel
+        os.system(f"sbatch ../../LJsweep.job {pressure} {temperature}") # parallel
 
-    # os.system(f"sbatch ../water_spce.job {Ui} {s} {T} {P} {p} {g} {o}")
-    # os.system(f"bash ../nacl_bmh.job {Ui} {s} {T} {P} {p} {g} {o} > {log} &")  
-    # break
+        # serial
+        # os.system(f"bash ../LJsweep.job {Density}") 
+        # os.system(f'python ../../../parseLammpsLogMdext.py -i log.lammps')
+        # os.system(f'mv log.csv {Density}.csv')
+
+        # os.system(f"sbatch ../water_spce.job {Ui} {s} {T} {P} {p} {g} {o}")
+        # os.system(f"bash ../nacl_bmh.job {Ui} {s} {T} {P} {p} {g} {o} > {log} &")  
+        # break
+    
+    # os.system(f'bash ../../../parseLammpsLogMdext.sh') # doesn't wait to finish need to run separately
+    os.chdir('..')
+
+# os.system('python ../../plotPressVsDensitySingleSaveCSVperT.py')
+
+
+# THEN run once all are complete and clean up broken runs
+# bash ../../../parseLammpsLogMdextManyfolders.sh
+# AND
+# python ../../../plotPressVsDensitySingleSaveCSVperT.py
+
+
    
 
     
