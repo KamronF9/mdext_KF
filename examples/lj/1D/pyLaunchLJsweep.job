@@ -9,6 +9,4 @@ module load pylammps
 
 #mpirun
 
-python ../../LJsweep.py \
-	$1 \
-	$2 \
+python ../pyLaunchLJsweep.py
