@@ -15,7 +15,7 @@ import h5py
 
 Angstrom = 1/0.5291772
 bins = 200
-z_edges = np.linspace(-10., 10., bins+1)
+z_edges = np.linspace(-15., 15., bins+1)
 z_mid = 0.5*(z_edges[:-1] + z_edges[1:])
 dz = z_edges[1] - z_edges[0]
 

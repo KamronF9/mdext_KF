@@ -13,6 +13,7 @@ T = 1300. # kelvin
 P = -1. # -1 is None = NVT, else it takes on the value of P = NPT
 p = 2 # atom type to apply the potential to (1-based)
 g = 'planar'
+S = 1234 # seed
 
 
 # endRange = 5.0
@@ -21,7 +22,12 @@ g = 'planar'
 # Ui=-0.4
 # sweep through potential amplitudes
 
-pots = ['D2ClNaPerturbTrain7r11','PBED2NaClTrain1AllTraining']
+# pots = ['D2ClNaPerturbTrain7r11','PBED2NaClTrain1AllTraining']
+# pots = ['PBED2NaClTrain8Pert_noHighPot']
+pots = []
+for i in range(4):
+    pots.append('PBED2NaClTrain8Pert_noHighPotseed'+str(i))
+    pots.append('PBED2NaClTrain1AllTrainingseed'+str(i))
 
 for pot in pots:
     # make dir
@@ -37,7 +43,7 @@ for pot in pots:
         # orig deepmd
         # os.system(f"bash ../nacl_DPMD_args.job {Ui} {s} {T} {P} {p} {g} {o} {pot}.pb")
         # os.system(f"sbatch ../nacl_DPMD_args.job {Ui} {s} {T} {P} {p} {g} {o} {pot}.pb")
-        os.system(f"sbatch ../../nacl_DPMD_args.job {Ui} {s} {T} {P} {p} {g} {o} {pot}.pb")
+        os.system(f"sbatch ../../nacl_DPMD_args.job {Ui} {s} {T} {P} {p} {g} {o} {pot}.pb {S}")
         # os.system(f"bash ../nacl_bmh.job {Ui} {s} {T} {P} {p} {g} {o}")  #  > {log} &
         # break
    
