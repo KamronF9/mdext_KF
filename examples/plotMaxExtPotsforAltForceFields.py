@@ -21,21 +21,26 @@ def main() -> None:
 
     # Parameter initialization update these if expanding
     # fig_name = 'test'
-    fig_name = 'MaxPotComparison_12ang_AllNVT_nacl_data8_1ANG'  # include traceability here to training version
-    # fig_title = 'Simulation RDFs of NNP Potentials '
+    fig_name = 'MaxPotComparison_12_12_22ang_AllNVT_nacl_data10_1ANGwAIMD_andnoHpot'  # include traceability here to training version
+    # fig_title = 'Simulation RDFs of NNP Potentials'
     # labels = ['FT', 'Standard NNP','Ext Pot NNP', 'AIMD']  # legend labels
     # directs = [r'/home/kamron/mdext_KF/examples/molten_salt/data6Nima40angBMH/',
     #             r'/home/kamron/mdext_KF/examples/molten_salt/data6Nima40angDPMDreg/',
     #             r'/home/kamron/mdext_KF/examples/molten_salt/data6Nima40angDPMDpert/',
     #             r'/home/kamron/mdext_KF/examples/molten_salt/data7AIMDpert/']
     # labels = [ 'NNP1','NNP0.5' ]  # legend labels
-    labels = ['Classical (Fumi-Tosi)', 'NNP', 'NNP-ext', 'AIMD']  # legend labels
+    # labels = ['Classical (Fumi-Tosi)', 'NNP', 'NNP-ext', 'AIMD']  # legend labels
+    # labels = ['NNP', 'NNP-ext']  # legend labels
     # labels = ['NNP', 'NNP-ext', 'AIMD']  # legend labels
+    labels = ['NNP', 'NNP-extNoHpot', 'AIMD']  # legend labels
     directs = [
-        r'/home/kamron/mdext_KF/examples/molten_salt/data8_12AngBMHNVTH5s1ANG/',
-        r'/home/kamron/mdext_KF/examples/molten_salt/data8_12AngNVT_NNP_H5s_fromPM_1ANG/PBED2NaClTrain1AllTraining/',
-        r'/home/kamron/mdext_KF/examples/molten_salt/data8_12AngNVT_NNP_H5s_fromPM_1ANG/D2ClNaPerturbTrain7r11/',
-        r'/home/kamron/mdext_KF/examples/molten_salt/data8_Long3NVT_AIMD_12ang_PM_184mH_1ANG/']
+        # r'/home/kamron/mdext_KF/examples/molten_salt/data8_12AngBMHNVTH5s1ANG/',
+        r'/home/kamron/mdext_KF/examples/molten_salt/data10NVTlongerBoxNNPsfromPM/PBED2NaClTrain1AllTraining/',
+        r'/home/kamron/mdext_KF/examples/molten_salt/data10NVTlongerBoxNNPsfromPM/PBED2NaClTrain8Pert_noHighPot/',
+        # r'/home/kamron/mdext_KF/examples/molten_salt/data10NVTlongerBoxNNPsfromPM/D2ClNaPerturbTrain7r11/',
+        r'/home/kamron/mdext_KF/examples/molten_salt/data10NVTlongerBoxAIMDfromPM/',
+        
+        ]
 
 
     figLabel = ['a', 'b']
@@ -77,13 +82,13 @@ def main() -> None:
                 #Bottom - repulsive
                 r,n,errs = GetData(direct, 5.0)  # , potential eV
                 plt.ylim((0,5))
-                plt.xlim((0,5.5))
+                # plt.xlim((0,5.5))
                 
             else:
                 #Top - attractive
                 r,n,errs = GetData(direct, -5.0)
                 plt.ylim((0,5))
-                plt.xlim((0,6))
+                # plt.xlim((0,6))
                 plt.xlabel("z [$\AA$]",fontsize=14)    
             density = n[:,particle]/N_bulk
             err = errs[:,particle]/N_bulk*2 # set to 2sigma
