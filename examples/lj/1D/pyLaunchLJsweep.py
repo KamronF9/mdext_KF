@@ -20,13 +20,14 @@ import numpy as np
 
 # Ui=-0.4
 
-stepSize = 0.1
+stepSize = 0.3 
     
 
 # for Ui in np.around(np.arange(0,endRange*2 + stepSize ,stepSize), decimals=1)-endRange:  
 # direct plug values in option
 # for Ui in [-2.5, 2.5]:  
-for temperature in np.around(np.arange(1.1,3+stepSize,stepSize),decimals=1): 
+# for temperature in np.around(np.arange(1.1,3+stepSize,stepSize),decimals=1): 
+for temperature in np.around(np.arange(0.1,1.5+stepSize,stepSize),decimals=1): 
     dirName = f'T={temperature}'
     os.system(f'mkdir {dirName}')
     os.chdir(dirName)

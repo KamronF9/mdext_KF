@@ -35,8 +35,8 @@ def main() -> None:
     labels = ['NNP', 'NNP-extNoHpot', 'AIMD']  # legend labels
     directs = [
         # r'/home/kamron/mdext_KF/examples/molten_salt/data8_12AngBMHNVTH5s1ANG/',
-        r'/home/kamron/mdext_KF/examples/molten_salt/data10longerBoxNVTwSeeds/PBED2NaClTrain1AllTraining',
-        r'/home/kamron/mdext_KF/examples/molten_salt/data10longerBoxNVTwSeeds/PBED2NaClTrain8Pert_noHighPot',
+        r'/home/kamron/mdext_KF/examples/molten_salt/data10NVTlongerBoxNNPswSeedsPM/NNP/',
+        r'/home/kamron/mdext_KF/examples/molten_salt/data10NVTlongerBoxNNPswSeedsPM/NNPext/',
         # r'/home/kamron/mdext_KF/examples/molten_salt/data10NVTlongerBoxNNPsfromPM/D2ClNaPerturbTrain7r11/',
         r'/home/kamron/mdext_KF/examples/molten_salt/data10NVTlongerBoxAIMDfromPM/',
         
@@ -56,7 +56,7 @@ def main() -> None:
 
     def GetData(direct, extPot):
 
-        with h5py.File(direct+f"test-U{extPot:+.1f}.h", "r") as fp:
+        with h5py.File(direct+f"Alltest-U{extPot:+.1f}.h", "r") as fp:
             r = np.array(fp["r"])
             n = np.array(fp["n"])
             try:
@@ -91,9 +91,15 @@ def main() -> None:
                 # plt.xlim((0,6))
                 plt.xlabel("z [$\AA$]",fontsize=14)    
             density = n[:,particle]/N_bulk
-            err = errs[:,particle]/N_bulk*2 # set to 2sigma
+            err = errs[:,particle]/N_bulk*10 # set to 2sigma XXXXXXXXX HACK
             plt.plot(r, density, label=labels[i])
-            plt.fill_between(r, density-err, density+err,facecolor='b',alpha=0.5)
+            
+            #remove error for now from AIMD
+            if i == 0:
+                plt.fill_between(r, density-err, density+err,facecolor='blue',alpha=0.2)
+            if i == 1:
+                plt.fill_between(r, density-err, density+err,facecolor='orange',alpha=0.2)
+
             plt.text(-0.2, 1.01, f"({figLabel[ax_ind]})", ha="left", va="top",
                 transform=ax.transAxes, fontsize="large", fontweight="bold")
             

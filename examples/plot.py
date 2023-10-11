@@ -16,7 +16,7 @@ with h5py.File(filename, "r") as fp:
     r = np.array(fp["r"])
     # n = np.array(fp["n"])/n_bulk
     n = np.array(fp["n"])
-    V = np.array(fp["V"])
+    # V = np.array(fp["V"])
 
 fig, axes = plt.subplots(2, 1, sharex=True, figsize=(6, 8))
 axes[0].plot(r, n)
@@ -30,3 +30,4 @@ axes[1].set_ylabel("Potential")
 axes[1].set_xlabel("r")
 # plt.show()
 plt.savefig(filename[:-4]+".pdf", bbox_inches='tight')
+
