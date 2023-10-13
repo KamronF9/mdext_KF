@@ -75,7 +75,7 @@ def main() -> None:
     )
     # md.run(2, "collection", args.output_file)
     md.run(2, "equilibration")
-    md.reset_stats()
+    # md.reset_stats()
     md.run(5, "collection", args.output_file)
 
 
@@ -83,7 +83,7 @@ def setup(lmp: PyLammps, seed: int) -> int:
     """Setup initial atomic configuration and interaction potential."""
     
     # Construct water box:
-    L = [11.6] * 3  # box dimensions *** aimd is 22*0.529ang=11.6
+    L = [11.6, 11.6, 23.8]  # box dimensions *** aimd is 22*0.529ang=11.6, 23.8 from 0eV equil.
     file_liquid = "liquid.data"
     is_head = (MPI.COMM_WORLD.rank == 0)
     if is_head:
@@ -121,8 +121,8 @@ def setup(lmp: PyLammps, seed: int) -> int:
     lmp.minimize("1E-4 1E-6 10000 100000")
     
     # Dump output file - conflicts with the reset stats function above somehow
-    # lmp.dump(f"write all custom 1000 pylammps{args.U0:+.1f}.dump id type element x y z")
-    # lmp.dump_modify("write element Cl Na")
+    lmp.dump(f"write all custom 1000 pylammps{args.U0:+.1f}.dump id type element x y z")
+    lmp.dump_modify("write element Cl Na")
 
 
 
