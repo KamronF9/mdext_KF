@@ -1,0 +1,29 @@
+#!/bin/bash
+#SBATCH -A m4025
+#SBATCH -C cpu
+# #SBATCH -q debug
+# #SBATCH -t 20:00
+#SBATCH -q regular
+#SBATCH -t 24:00:00
+#SBATCH -N 1
+#SBATCH -o variable.o%j
+#SBATCH -n 1
+
+
+# module load python
+# conda activate pylammps9
+
+pot='PBED2NaClTrain8Pert_noHighPotseed0'  # new without highest potentials
+# pot='D2ClNaPerturbTrain7r11COMP'  # old w too high potentials
+# pot='PBED2NaClTrain1AllTrainingCOMP'
+
+mkdir ${pot}
+cd ${pot}
+
+python ../launcherCavitationDPMD.py ${pot}
+
+# python ../mdextCavitationDPMD.py ${pot}
+# python mdextCavitationDPMD.py PBED2NaClTrain1AllTraining
+    
+
+
