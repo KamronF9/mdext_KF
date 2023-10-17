@@ -1,0 +1,27 @@
+#!/bin/bash
+#SBATCH -A m4025
+#SBATCH -C cpu
+# #SBATCH -t 6:00:00
+#SBATCH -t 12:00:00
+#SBATCH -N 1
+#SBATCH -o variable.o%j
+#SBATCH -n 1
+#SBATCH -q regular
+
+# module load python
+# conda activate pylammps9
+
+
+# pot='D2ClNaPerturbTrain7r11COMP'
+pot='PBED2NaClTrain1AllTrainingCOMP'
+
+mkdir ${pot}
+cd ${pot}
+
+python ../launcherCavitationDPMD.py ${pot}
+
+# python ../mdextCavitationDPMD.py ${pot}
+# python mdextCavitationDPMD.py PBED2NaClTrain1AllTraining
+    
+
+

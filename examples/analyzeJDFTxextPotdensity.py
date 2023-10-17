@@ -75,11 +75,16 @@ for iFile,inFile in enumerate(fs):
                 atposActive = False
                 # assert coordsType != "cartesian"
                 atposOrig = atpos
+                # print(f'{atpos=}')
+                # sys.exit(0)
                 # reset atpos=atposOrig
                 if coordsType == "cartesian":
                     # scaled cartesian to fractional coords
                     # convert to fractional using Bohrs (not Ang) OR put atpos move to ang
+                    # R in
                     atpos = np.dot(atpos/Angstrom,np.linalg.inv(R.T)) 
+                # print(f'{np.linalg.inv(R.T)=}')
+
                 atpos -= np.floor(0.5 + atpos) #wrap
                 atpos = np.dot(atpos, R.T) #convert to Cartesian (Angstrom)
                 # np.dot(atpos[0],np.linalg.inv(R.T))
@@ -101,9 +106,11 @@ for iFile,inFile in enumerate(fs):
                     # print(f'{len(AtUniDensityTwoSide)=}') #200
                     # plt.plot(z_mid, AtUniDensityTwoSide)
                     # plt.savefig('test1.png')
+                    # plt.plot(z_mid[-int(bins/2):], (AtUniDensityTwoSide[:int(bins/2)]))
                     # plt.plot(z_mid[-int(bins/2):], np.flip(AtUniDensityTwoSide[:int(bins/2)]))
                     # plt.plot(z_mid[-int(bins/2):], AtUniDensityTwoSide[-int(bins/2):])
                     # plt.savefig('test2.png')
+                    # plt.savefig('test2b.png')
                     # sys.exit(0)
                     AtUniDensityOneSide = (np.flip(AtUniDensityTwoSide[:int(bins/2)])+AtUniDensityTwoSide[-int(bins/2):])*0.5
                     # print(f'{len(AtUniDensityOneSide)=}') # 100
