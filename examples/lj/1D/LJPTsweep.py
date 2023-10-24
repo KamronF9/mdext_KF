@@ -50,7 +50,7 @@ def setup(lmp: PyLammps, seed: int) -> int:
         " units box"
     )
     lmp.create_box("1 sim_box")
-    n_bulk = 0.3 # was 0.7   # in LJ 1/sigma
+    n_bulk = 0.7 # was 0.7   # in LJ 1/sigma
 
     lmp.log(f'{float(sys.argv[1])}.log')
     n_atoms = int(np.round(n_bulk * Lz))

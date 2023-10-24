@@ -106,7 +106,7 @@ for iLine,line in enumerate(open(inFile)):
     if (line.find('TIMESTEP') > 0) and (iLine>5) and (nFrames>framesToIgnore):  # once you get to the end/beginning of the next tally up the RDF
         # RDF initialize
         if not rdfInited:
-            rMax = 0.5 * np.mean(np.diag(R))     
+            rMax = 0.5 * R[2,2] # np.mean(np.diag(R))     
             dr = 0.01
             rBins = np.arange(0., rMax, dr)
             rBins[0] = 0.01*dr #ignore self
