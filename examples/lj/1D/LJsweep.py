@@ -36,10 +36,10 @@ def main() -> None:
         Tdamp=0.5,
         Pdamp=1.0,
     )
-    md.run(10, "equilibration")  # 10* 50*100 = 50 ps
+    md.run(20, "equilibration")  # 10* 50*100 = 50 ps
     md.reset_stats()
     # md.run(40, "collection", f"testPress_{float(sys.argv[1])}.h5")
-    md.run(40, "collection", sys.argv[5])
+    md.run(100, "collection", sys.argv[5])
 
 
 def setup(lmp: PyLammps, seed: int) -> int:
