@@ -53,8 +53,8 @@ for Ui in np.around(np.arange(0,endRange*2 + stepSize ,stepSize), decimals=1)-en
 
 # plt.plot(r, V, color="k", lw=1, ls="dashed")  # plot largest shaped V
 # plt.xlim([r.min(),r.max()])
-plt.xlim([0,5])
-plt.ylim([0,1])
+# plt.xlim([0,5])
+# plt.ylim([0,1])
 
 # --- add colorbar
 sm = mpl.cm.ScalarMappable(cmap=cmap, norm=normalize)
