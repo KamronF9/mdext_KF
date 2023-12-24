@@ -3,6 +3,7 @@ import pandas as pd
 import argparse
 import glob
 import os
+import sys
 
 curr_dir = os.getcwd()
 
@@ -41,10 +42,11 @@ dataend_idxs = []
 
 linecounter = 0
 for line in lines:
-        if line.startswith('Step'):
+        # if line.startswith('Step'):
+        if line.startswith('   Step'):
                 datastart_idxs.append(linecounter)
         linecounter += 1
-
+# print(f'{datastart_idxs=}')
 linecounter = 0
 for line in lines:
         if (line.startswith('Loop time of')) and (lines.index(line) > np.min(datastart_idxs)):
@@ -55,14 +57,18 @@ print(datastart_idxs)
 print(dataend_idxs)
 
 # may not need with the reset with mdext.... 
-header = purge(lines[datastart_idxs[0]].split(' ')) # should be the same header for all
+# print(purge(lines[datastart_idxs[0]].split(' ')))
+# sys.exit(0)
+header = purge(lines[datastart_idxs[1]].split(' ')) # should be the same header for all  but isn't!! so use second one
 # we only want the TI data not initial equilibration
 data = []
 for idx in range(len(datastart_idxs)): # index of indices
         data_chunk = lines[datastart_idxs[idx]+1:dataend_idxs[idx]]
         for d in data_chunk:
+                # print(purge(d.split(' ')))
+                # sys.exit(0)
                 data.append(purge(d.split(' ')))
 
 df = pd.DataFrame(data, columns=header)
-outfile = infile[:-3] + 'csv'
+outfile = infile[:-4] + '.csv'
 df.to_csv(outfile)

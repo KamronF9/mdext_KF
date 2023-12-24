@@ -140,3 +140,5 @@ liquid.data
 *.zip
 out*
 variable.o*
+*.csv
+*.dat

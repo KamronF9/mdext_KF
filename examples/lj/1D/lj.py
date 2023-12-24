@@ -11,7 +11,8 @@ def main() -> None:
     T = 0.7  # in LJ epsilon
     P = 1.0  # in LJ epsilon/sigma^2
     seed = 12345
-    U0 = -15.0  # Amplitude of the external potential (in LJ epsilon)
+    # U0 = -15.0  # Amplitude of the external potential (in LJ epsilon)
+    U0 = 0.0 # Amplitude of the external potential (in LJ epsilon)
     sigma = 0.5  # Width of the external potential (in LJ sigma)
 
     # Initialize and run simulation:
@@ -31,8 +32,10 @@ def main() -> None:
         Pdamp=1.0,
     )
     md.run(10, "equilibration")
-    md.reset_stats()
+    # md.reset_stats()
     md.run(40, "collection", "test.h5")
+    
+
 
 
 def setup(lmp: PyLammps, seed: int) -> int:
@@ -60,6 +63,11 @@ def setup(lmp: PyLammps, seed: int) -> int:
     # Initial minimize:
     log.info("Minimizing initial structure")
     lmp.minimize("1E-4 1E-6 10000 100000")
+    
+    # Dump output file - conflicts with the reset stats function above somehow
+    lmp.dump(f"write all custom 1000 pylammps.dump id type x y z")
+    # lmp.dump_modify("write element Cl Na")
+
 
 
 if __name__ == "__main__":

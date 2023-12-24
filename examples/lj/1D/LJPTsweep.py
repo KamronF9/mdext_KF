@@ -10,13 +10,10 @@ def main() -> None:
    
     # Current simulation parameters (all in LJ units):
     global T, P
-    if sys.argv[1] == -1.:
-        P=None
-    else:
-        P = float(sys.argv[1])  # in LJ epsilon/sigma^2
     T = float(sys.argv[2])  # was 0.7 in LJ epsilon
-    seed = int(sys.argv[3])
-    U0 = float(sys.argv[4])  # Amplitude of the external potential (in LJ epsilon)
+    P = float(sys.argv[1])  # in LJ epsilon/sigma^2
+    seed = 12345
+    U0 = 0.0  # Amplitude of the external potential (in LJ epsilon)
     sigma = 0.5  # Width of the external potential (in LJ sigma)
 
     # Initialize and run simulation:
@@ -36,10 +33,9 @@ def main() -> None:
         Tdamp=0.5,
         Pdamp=1.0,
     )
-    md.run(20, "equilibration")  # 10* 50*100 = 50 ps
-    md.reset_stats()
-    # md.run(40, "collection", f"testPress_{float(sys.argv[1])}.h5")
-    md.run(100, "collection", sys.argv[5])
+    md.run(10, "equilibration")  # 10* 50*100 = 50 ps
+    # md.reset_stats()
+    md.run(40, "collection", f"testPress_{float(sys.argv[1])}.h5")
 
 
 def setup(lmp: PyLammps, seed: int) -> int:
@@ -72,7 +68,7 @@ def setup(lmp: PyLammps, seed: int) -> int:
     lmp.minimize("1E-4 1E-6 10000 100000")
 
     # Dump output file - conflicts with the reset stats function above somehow
-    # lmp.dump(f"write all custom 1000 1D_T{T:.1f}_P{P:.1f}.dump id type x y z")
+    lmp.dump(f"write all custom 1000 1D_T{T:.1f}_P{P:.1f}.dump id type x y z")
 
 
 if __name__ == "__main__":

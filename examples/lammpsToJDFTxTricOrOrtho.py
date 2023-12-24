@@ -17,6 +17,7 @@ if len(sys.argv) < 6:
     # python /home/kamron/mdext_KF/examples/lammpsToJDFTxTricOrOrtho.py pylammps-5.0last.dump init-5.0 1 1 1 
     # python /home/kamron/mdext_KF/examples/lammpsToJDFTxTricOrOrtho.py pylammps+2.5last.dump init+2.5 1 1 1 
     # python /home/kamron/mdext_KF/examples/lammpsToJDFTxTricOrOrtho.py pylammps-2.5last.dump init-2.5 1 1 1 
+    # python /global/homes/k/kamron/mdext_KF/examples/lammpsToJDFTxTricOrOrtho.py
     exit(1)
 
 dumpFile = sys.argv[1]  #read lammps dumpFile
