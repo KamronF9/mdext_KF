@@ -5,27 +5,20 @@ import matplotlib.pyplot as plt
 @dataclass
 class GaussianPolynomial:
     """potential of gaussian with peak `U0` and width `sigma` and 
-    polynomial with `a0-2` in terms of r_sq/sigma_sq
+    polynomial with `polyCoeffs` in terms of r_sq/sigma_sq
     """
     U0: float  #: Strength
     sigma: float  #: width of Gaussian
     polyCoeffs: list #: list of floats for polynomial coefficients
-    # a0: float #: +/- nondimensional polynomial coeff a0
-    # a1: float #: +/- nondimensional polynomial coeff a1
-    # a2: float #: +/- nondimensional polynomial coeff a2
-    
 
     def __call__(self, r_sq: np.ndarray):
         sigma_sq = self.sigma**2
         E1 = np.exp(-0.5*r_sq/sigma_sq)
-        # E2 = a0 + a1*r_sq/sigma_sq + a2*r_sq**2/sigma_sq**2
         
-        # HACK
-        E_norm = 1
         if polyCoeffs == [0]*len(polyCoeffs):
             # Gaussian only
             E = self.U0 * E1
-            # E_norm = np.linalg.norm(E)
+            E_norm = np.linalg.norm(E)
             E *= 1/E_norm
             r_sq_grad = -0.5/sigma_sq*E # dE/dr_sq
         else:
@@ -34,9 +27,10 @@ class GaussianPolynomial:
             E2 = polyEq(r_sq/sigma_sq)
             polyEqDeriv = polyEq.deriv()(r_sq/sigma_sq)
             E = self.U0 * E1 * E2
-            # E_norm = np.linalg.norm(E)
+            E_norm = np.linalg.norm(E)
             E *= 1/E_norm
             r_sq_grad = self.U0/E_norm * ( -0.5/sigma_sq*E1*E2 + E1*polyEqDeriv )   # dE/dr_sq
+            print(E_norm)
 
         return E, r_sq_grad
 
@@ -47,7 +41,7 @@ sigmaScale = np.random.uniform(10,30)
 # sigma=L/10 # /10 to make sure it goes to zero around half of box by observation
 sigma=L/sigmaScale # /10 to make sure it goes to zero around half of box by observation
 
-polyCoeffs = np.random.uniform(-10.,10.,size=(3)).tolist() # gauss and poly
+# polyCoeffs = np.random.uniform(-10.,10.,size=(3)).tolist() # gauss and poly
 # polyCoeffs = [0.] # gaussian only
 
 
@@ -61,9 +55,18 @@ E, r_sq_grad = test(r_sq)
 
 plt.plot(r,E,label='E')
 plt.plot(r,r_sq_grad,label='grad')
-# plt.plot(r_sq,E,label='E')
-# plt.plot(r_sq,r_sq_grad,label='grad')
+plt.plot(r,r_sq_grad*-2*r,label='F')
+plt.xlabel('r')
 plt.legend()
+
+# plt.plot(np.sqrt(r),E,label='E')
+# plt.plot(np.sqrt(r),r_sq_grad,label='grad')
+# plt.plot(np.sqrt(r),r_sq_grad*-2*r,label='F')
+# plt.xlabel('sqrt r')
+# plt.legend()
+
+
+
 # E_norm = E/np.linalg.norm(E)
 # (E_norm**2).sum() # is 1 OK
 
