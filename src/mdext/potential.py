@@ -12,50 +12,20 @@ Potential = Callable[[np.ndarray], Tuple[np.ndarray, np.ndarray]]
 """Return potential and its derivative, given square of 1D coordinate as input.
 Note that the derivative is also with respect to the squared-coordinate."""
 
-# from mldft
-# def _get_random(grid1d: Grid1D, *, sigma: float, seed: int) -> torch.Tensor:
-#     # Determine zero and Nyquist frequency weights / real constraints:
-#     iGz = grid1d.iGz
-#     Nz = grid1d.grid.shape[2]
-#     is_real = torch.logical_or(iGz == 0, 2 * iGz == Nz)
-#     Gweight = torch.where(is_real, 1.0, 2.0)
-#     # Create white noise with above constraints:
-#     Gmag = grid1d.Gmag
-#     torch.manual_seed(seed)
-#     Gnoise = torch.randn_like(Gmag, dtype=torch.complex128)
-#     Gnoise[is_real] = Gnoise[is_real].real.to(torch.complex128)
-#     Gnoise[iGz == 0] = 0.0  # set average to zero
-#     # Filter and normalize:
-#     Gnoise *= (-0.5 * (Gmag * sigma).square()).exp()
-#     Gnoise *= (1.0 / (qp.math.abs_squared(Gnoise) * Gweight).sum()).sqrt()
-#     return Gnoise
 
-@dataclass
-class Random:
-    """Random potential of gaussian with peak `U0` and width `sigma` and 
-    polynomial with `a0-2` in terms of r_sq/sigma_sq"""
-    U0: float  #: Strength
-    sigma: float  #: width
-    a0: float #: nondimensional polynomial coeff a0
-    a1: float #: nondimensional polynomial coeff a1
-    a2: float #: nondimensional polynomial coeff a2
 
-    def __call__(self, r_sq: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
-        E = self.A * np.exp((self.sigma - np.sqrt(r_sq)) / self.rho)
-        r_sq_grad = -0.5 * E / (np.sqrt(r_sq) * self.rho) # dE/dr_sq
-        return E, r_sq_grad
 
-class Gaussian:
-    def __init__(self, U0: float, sigma: float) -> None:
-        """Gaussian potential with peak `U0` and width `sigma`."""
-        self.U0 = U0
-        self.sigma = sigma
-        self.mhalf_inv_sigma_sq = -0.5 / (sigma ** 2)
+# class Gaussian:
+#     def __init__(self, U0: float, sigma: float) -> None:
+#         """Gaussian potential with peak `U0` and width `sigma`."""
+#         self.U0 = U0
+#         self.sigma = sigma
+#         self.mhalf_inv_sigma_sq = -0.5 / (sigma ** 2)
 
-    def __call__(self, r_sq: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
-        E = self.U0 * np.exp(self.mhalf_inv_sigma_sq * r_sq)
-        r_sq_grad = self.mhalf_inv_sigma_sq * E
-        return E, r_sq_grad
+#     def __call__(self, r_sq: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+#         E = self.U0 * np.exp(self.mhalf_inv_sigma_sq * r_sq)
+#         r_sq_grad = self.mhalf_inv_sigma_sq * E
+#         return E, r_sq_grad
 
 
 @dataclass
