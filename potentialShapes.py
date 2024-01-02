@@ -20,21 +20,23 @@ class GaussianPolynomial:
         E1 = np.exp(-0.5*r_sq/sigma_sq)
         # E2 = a0 + a1*r_sq/sigma_sq + a2*r_sq**2/sigma_sq**2
         
+        # HACK
+        E_norm = 1
         if polyCoeffs == [0]*len(polyCoeffs):
             # Gaussian only
             E = self.U0 * E1
-            E_norm = np.linalg.norm(E)
+            # E_norm = np.linalg.norm(E)
             E *= 1/E_norm
-            r_sq_grad = 1/E_norm # dE/dr_sq
+            r_sq_grad = -0.5/sigma_sq*E # dE/dr_sq
         else:
             # Gaussian and polynomial
             polyEq = np.polynomial.polynomial.Polynomial(polyCoeffs, domain=None, window=None)
             E2 = polyEq(r_sq/sigma_sq)
             polyEqDeriv = polyEq.deriv()(r_sq/sigma_sq)
             E = self.U0 * E1 * E2
-            E_norm = np.linalg.norm(E)
+            # E_norm = np.linalg.norm(E)
             E *= 1/E_norm
-            r_sq_grad = self.U0/E_norm * ( 1/(2*sigma_sq)*E1*E2 + E1*polyEqDeriv )   # dE/dr_sq
+            r_sq_grad = self.U0/E_norm * ( -0.5/sigma_sq*E1*E2 + E1*polyEqDeriv )   # dE/dr_sq
 
         return E, r_sq_grad
 
@@ -44,14 +46,14 @@ U0=1.  # lambda equivalent to scale all
 sigmaScale = np.random.uniform(10,30)
 # sigma=L/10 # /10 to make sure it goes to zero around half of box by observation
 sigma=L/sigmaScale # /10 to make sure it goes to zero around half of box by observation
-# a0,a1,a2 = np.random.uniform(-10.,10.,size=(3))
-polyCoeffs = np.random.uniform(-10.,10.,size=(3)).tolist()
-# a0,a1,a2 = np.zeros(3)
+
+polyCoeffs = np.random.uniform(-10.,10.,size=(3)).tolist() # gauss and poly
+# polyCoeffs = [0.] # gaussian only
 
 
-# test = GaussianPolynomial(U0,sigma,a0,a1,a2)
+
 test = GaussianPolynomial(U0,sigma,polyCoeffs)
-# test = GaussianPolynomial(U0,sigma,[0.]) # gaussian only
+
 
 r = np.arange(start=0.,stop=L,step=0.1)
 r_sq = r **2
@@ -59,6 +61,8 @@ E, r_sq_grad = test(r_sq)
 
 plt.plot(r,E,label='E')
 plt.plot(r,r_sq_grad,label='grad')
+# plt.plot(r_sq,E,label='E')
+# plt.plot(r_sq,r_sq_grad,label='grad')
 plt.legend()
 # E_norm = E/np.linalg.norm(E)
 # (E_norm**2).sum() # is 1 OK
