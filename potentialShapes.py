@@ -15,22 +15,22 @@ class GaussianPolynomial:
         sigma_sq = self.sigma**2
         E1 = np.exp(-0.5*r_sq/sigma_sq)
         
-        if polyCoeffs == [0]*len(polyCoeffs):
-            # Gaussian only
-            E = self.U0 * E1
-            E_norm = np.linalg.norm(E)
-            E *= 1/E_norm
-            r_sq_grad = -0.5/sigma_sq*E # dE/dr_sq
-        else:
-            # Gaussian and polynomial
-            polyEq = np.polynomial.polynomial.Polynomial(polyCoeffs, domain=None, window=None)
-            E2 = polyEq(r_sq/sigma_sq)
-            polyEqDeriv = polyEq.deriv()(r_sq/sigma_sq)
-            E = self.U0 * E1 * E2
-            E_norm = np.linalg.norm(E)
-            E *= 1/E_norm
-            r_sq_grad = self.U0/E_norm * ( -0.5/sigma_sq*E1*E2 + E1*polyEqDeriv )   # dE/dr_sq
-            print(E_norm)
+        # if polyCoeffs == [0]*len(polyCoeffs):
+        #     # Gaussian only
+        #     E = self.U0 * E1
+        #     E_norm = np.linalg.norm(E)
+        #     E *= 1/E_norm
+        #     r_sq_grad = -0.5/sigma_sq*E # dE/dr_sq
+        # else:
+        # Gaussian and polynomial
+        polyEq = np.polynomial.polynomial.Polynomial(polyCoeffs, domain=None, window=None)
+        E2 = polyEq(r_sq/sigma_sq)
+        polyEqDeriv = polyEq.deriv()(r_sq/sigma_sq)
+        E = self.U0 * E1 * E2
+        E_norm = np.linalg.norm(E)
+        E *= 1/E_norm
+        r_sq_grad = self.U0/E_norm * ( -0.5/sigma_sq*E1*E2 + E1*polyEqDeriv )   # dE/dr_sq
+        print(E_norm)
 
         return E, r_sq_grad
 
@@ -40,9 +40,9 @@ U0=1.  # lambda equivalent to scale all
 sigmaScale = np.random.uniform(10,30)
 # sigma=L/10 # /10 to make sure it goes to zero around half of box by observation
 sigma=L/sigmaScale # /10 to make sure it goes to zero around half of box by observation
-
+np.random.seed(0)
 # polyCoeffs = np.random.uniform(-10.,10.,size=(3)).tolist() # gauss and poly
-# polyCoeffs = [0.] # gaussian only
+polyCoeffs = [1.] # gaussian only
 
 
 
@@ -54,8 +54,8 @@ r_sq = r **2
 E, r_sq_grad = test(r_sq)
 
 plt.plot(r,E,label='E')
-plt.plot(r,r_sq_grad,label='grad')
-plt.plot(r,r_sq_grad*-2*r,label='F')
+# plt.plot(r,r_sq_grad,label='grad')
+plt.plot(r,r_sq_grad*(-2)*r,label='F')
 plt.xlabel('r')
 plt.legend()
 
