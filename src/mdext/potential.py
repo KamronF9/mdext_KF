@@ -13,50 +13,9 @@ Potential = Callable[[np.ndarray], Tuple[np.ndarray, np.ndarray]]
 Note that the derivative is also with respect to the squared-coordinate."""
 
 
-@dataclass
-class GaussianPolynomial:
-    """potential of gaussian with peak `U0` and width `sigma` and 
-    polynomial with `a0-2` in terms of r_sq/sigma_sq
-    """
-    U0: float  #: Strength
-    sigma: float  #: width of Gaussian
-    polyCoeffs: list #: list of floats for polynomial coefficients
 
-    def __call__(self, r_sq: np.ndarray):
-        sigma_sq = self.sigma**2
-        E1 = np.exp(-0.5*r_sq/sigma_sq)
-        
-        # # HACK
-        # E_norm = 1
-        if polyCoeffs == [0]*len(polyCoeffs):
-            # Gaussian only
-            E = self.U0 * E1
-            E_norm = np.linalg.norm(E)
-            E *= 1/E_norm
-            r_sq_grad = -0.5/sigma_sq*E # dE/dr_sq
-        else:
-            # Gaussian and polynomial
-            polyEq = np.polynomial.polynomial.Polynomial(polyCoeffs, domain=None, window=None)
-            E2 = polyEq(r_sq/sigma_sq)
-            polyEqDeriv = polyEq.deriv()(r_sq/sigma_sq)
-            E = self.U0 * E1 * E2
-            E_norm = np.linalg.norm(E)
-            E *= 1/E_norm
-            r_sq_grad = self.U0/E_norm * ( -0.5/sigma_sq*E1*E2 + E1*polyEqDeriv )   # dE/dr_sq
 
-        return E, r_sq_grad
 
-# class Gaussian:
-#     def __init__(self, U0: float, sigma: float) -> None:
-#         """Gaussian potential with peak `U0` and width `sigma`."""
-#         self.U0 = U0
-#         self.sigma = sigma
-#         self.mhalf_inv_sigma_sq = -0.5 / (sigma ** 2)
-
-#     def __call__(self, r_sq: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
-#         E = self.U0 * np.exp(self.mhalf_inv_sigma_sq * r_sq)
-#         r_sq_grad = self.mhalf_inv_sigma_sq * E
-#         return E, r_sq_grad
 
 
 @dataclass
