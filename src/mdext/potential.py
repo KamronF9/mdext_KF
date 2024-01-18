@@ -16,16 +16,16 @@ Note that the derivative is also with respect to the squared-coordinate."""
 
 
 @dataclass
-class GaussianPolynomial:
+class Gaussian:
     """potential of gaussian with peak `U0` and width `sigma` and 
     polynomial with `polyCoeffs` in terms of r_sq/sigma_sq
     """
     U0: float  #: Strength
     sigma: float  #: width of Gaussian
-    coeffs: Sequence[float] = (1.0,)  #: list of floats for polynomial coefficients
+    coeffs: Sequence[float] = (1.0,)  #: list of floats for polynomial coefficients, accepts list, tuple 
     polynomial: Polynomial = field(init=False)  #: polynomial including U0, don't initialize yet
     deriv: Polynomial = field(init=False)  #: corresponding derivative
-
+    # setup added init functions
     def __post_init__(self) -> None:
         self.polynomial = Polynomial(np.array(self.coeffs) * self.U0)
         self.deriv = self.polynomial.deriv()

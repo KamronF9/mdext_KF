@@ -11,7 +11,7 @@ import random
 Ts = [0.7, 1.0, 1.6]
 Ps = [0.7, 1.0, 1.3]
 
-for i in range[len(Ts)]:
+for i in range(len(Ts)):
     # i = 0
     
     # s = 1.0 # sigma width gaussian
@@ -22,8 +22,9 @@ for i in range[len(Ts)]:
     
     
     newDir = f'P{P}_T{P}'
-    os.mkdir(newDir)
+    os.system(f'mkdir {newDir}')
     os.chdir(newDir)
+    os.system('rm out.o*')
 
 
 
@@ -46,18 +47,23 @@ for i in range[len(Ts)]:
     #     os.chdir(dirName)
     # for pressure in np.around(np.arange(0.1,1+stepSize,stepSize),decimals=1):
 
-    for Ui in np.around(np.arange(0,endRange*2 + stepSize ,stepSize), decimals=1)-endRange:  
-    # for Ui in [12.5]:  
-        print(f"{Ui:+.1f}")
-        h5name = f"test-U{Ui:+.1f}.h"
-        seed = str(random.randint(1,1000))
-        # log = o[:-3]+"_out"
+    # seeds = np.arange(1,2,1) # seed for np in the launches, doesn't include end
+    seeds = np.arange(2,4,1) # seed for np in the launches, doesn't include end
 
-        # os.system(f"sbatch ../LJsweep.job {Density}") # parallel
-        os.system(f"sbatch ../LJsweep.job {P} {T} {seed} {Ui} {h5name}") # parallel
+    for seed in seeds:
+        print(seed)
+        for Ui in np.around(np.arange(0,endRange*2 + stepSize ,stepSize), decimals=1)-endRange:  
+        # for Ui in [12.5]:  
+            print(f"{Ui:+.1f}")
+            h5name = f"seed{seed:04}_test-U{Ui:+.1f}.h"
+            # seed = str(random.randint(1,1000)) # was velocity seed
+            # log = o[:-3]+"_out"
 
-    
-        # break
-    
+            # os.system(f"sbatch ../LJsweep.job {Density}") # parallel
+            os.system(f"sbatch ../../LJsweep.job {P} {T} {seed} {Ui} {h5name}") # parallel
+
+        
+            # break
+        
     
     os.chdir('..')

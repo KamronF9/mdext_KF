@@ -4,13 +4,9 @@
 module purge
 #module load venv/mdext
 module load venv/mdextKF
-module load openmpi
-module load pylammps
+# module load openmpi
+# module load pylammps
 
 #mpirun
 
-# python ../spceNima20JUL23.py \
-# 	$1 \
-
-python ../spceNima20JUL23GaussPoly.py \
-	$1 \
+python ../spceNima20JUL23GaussPoly.py

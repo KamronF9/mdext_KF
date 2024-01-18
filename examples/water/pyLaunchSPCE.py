@@ -15,17 +15,17 @@ import numpy as np
 # g = 'planar'
 
 # sweep through potential amplitudes option:
-# endRange = 5.0
-# stepSize = 0.5
+endRange = 2.5
+stepSize = 0.5
 
 # Ui=-0.4
 
 
     
 
-# for Ui in np.around(np.arange(0,endRange*2 + stepSize ,stepSize), decimals=1)-endRange:  
+for Ui in np.around(np.arange(0,endRange*2 + stepSize ,stepSize), decimals=1)-endRange:  
 # direct plug values in option
-for Ui in [-2.5, 2.5]:  
+# for Ui in [-2.5, 2.5]:  
     print(f"{Ui:+.1f}")
     # o = f"test-U{Ui:+.1f}.h"
     # log = o[:-3]+"_out"

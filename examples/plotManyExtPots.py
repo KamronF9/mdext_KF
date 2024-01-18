@@ -6,12 +6,14 @@ import os
 import matplotlib as mpl
 from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.ticker as plticker
+import glob
 
-endRange = 5.0
+endRange = 2.5
 stepSize = 0.5
 
 particle = 1 # on a 0 index basis
-N_bulk = 0.015
+# N_bulk = 0.015 # nacl
+N_bulk = 0.033325 # water
 
 
 # plt.figure(1)
@@ -32,7 +34,7 @@ cmap = LinearSegmentedColormap('RedBlue', colorDict)
 for Ui in np.around(np.arange(0,endRange*2 + stepSize ,stepSize), decimals=1)-endRange:  
     print(f"{Ui:+.1f}")
     
-    with h5py.File(f"test-U{Ui:+.1f}.h", "r") as fp:
+    with h5py.File(glob.glob(f"*{Ui:+.1f}*")[0], "r") as fp:
         r = np.array(fp["r"])
         n = np.array(fp["n"])
         V = np.array(fp["V"])
@@ -40,7 +42,7 @@ for Ui in np.around(np.arange(0,endRange*2 + stepSize ,stepSize), decimals=1)-en
             print(f'{n.mean()=}')
     plt.plot(r,n[:,particle]/(N_bulk),color=cmap(normalize(Ui)), lw=1)
     plt.xlabel("z [$\AA$]",fontsize=14)
-    plt.ylabel("$n_{Na}(z)/n_{bulk}$",fontsize=14)
+    plt.ylabel("$n_{O}(z)/n_{bulk}$",fontsize=14)
     # plt.ylabel("$n_{H}(z)/n_{bulk}$",fontsize=11,fontname="Times New Roman")
     
     # plt.legend()
@@ -53,7 +55,7 @@ for Ui in np.around(np.arange(0,endRange*2 + stepSize ,stepSize), decimals=1)-en
 
 # plt.plot(r, V, color="k", lw=1, ls="dashed")  # plot largest shaped V
 # plt.xlim([r.min(),r.max()])
-plt.ylim([0,5])
+# plt.ylim([0,5])
 
 # --- add colorbar
 sm = mpl.cm.ScalarMappable(cmap=cmap, norm=normalize)

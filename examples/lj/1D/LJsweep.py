@@ -4,6 +4,7 @@ import numpy as np
 from lammps import PyLammps
 from mdext import log
 import sys
+import scipy
 
 
 def main() -> None:
@@ -15,17 +16,28 @@ def main() -> None:
     else:
         P = float(sys.argv[1])  # in LJ epsilon/sigma^2
     T = float(sys.argv[2])  # was 0.7 in LJ epsilon
-    seed = int(sys.argv[3])
+    npSeed = int(sys.argv[3])
     U0 = float(sys.argv[4])  # Amplitude of the external potential (in LJ epsilon)
     sigma = 0.5  # Width of the external potential (in LJ sigma)
+
+    np.random.seed(npSeed)
+    coeffs = np.random.randn(3) # gauss and poly
+    powers = np.arange(len(coeffs))
+    power_pair_sums = powers[:, None] + powers[None, :]
+    norm_fac = np.sqrt(
+        np.sqrt(np.pi)
+        / (coeffs @ scipy.special.gamma(power_pair_sums + 0.5) @ coeffs)
+    )
+    coeffs *= norm_fac
+
 
     # Initialize and run simulation:
     md = mdext.md.MD(
         setup=setup,
         T=T,
         P=P,
-        seed=seed,
-        potential=mdext.potential.Gaussian(U0, sigma),
+        seed=12345,
+        potential=mdext.potential.Gaussian(U0, sigma, coeffs),
         geometry_type=mdext.geometry.Planar,
         n_atom_types=1,
         potential_type=1,
