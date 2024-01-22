@@ -40,11 +40,12 @@ def main(U0ev, startfile, npSeed) -> None:
         geometry_type=mdext.geometry.Planar,
         n_atom_types=2,
         potential_type=2,
+        pe_collect_interval=100,
         timestep=1,
     )
-    md.run(1, "equilibration") # was 5
+    md.run(5, "equilibration") # was 5 . 5000 dt per run #
     md.reset_stats() # was commented to allow dump?
-    md.run(1, "collection", f"data-U{U0ev:+.2f}.h5") # was 10
+    md.run(10, "collection", f"data-U{U0ev:+.2f}.h5") # was 10
     md.lmp.write_data(f'U{U0ev:+.2f}.step.data nocoeff')
 
 @dataclass
@@ -106,7 +107,7 @@ if __name__ == "__main__":
     # each seed would be run in a separate folder to prevent conflict and run in parallel
 
     # sweep through potential amplitudes option:
-    endRange = 0.1 # eV
+    endRange = 1.0 # eV
     stepSize = 0.01  # start around kbT
 
     # Ui in eV
@@ -115,31 +116,32 @@ if __name__ == "__main__":
     print('Uis: ', UisPos)
     print('Uis: ', UisNeg)
     # Ui=-0.4
-    sys.exit(1)
+    # sys.exit(1)
     for Uis in [UisPos,UisNeg]:
 
-    for i, Ui in enumerate(UisPos):  
-    # direct plug values in option
-    # for Ui in [-2.5, 2.5]:  
-        # print(f"{Ui:+.1f}")
-        
-        print(f"launching seed {npSeed}, Ui {Ui:+.2f}")
-        #os.system("lmp_0921 < cavity.in -v T 1100 -v R %s"%(str(R)))
-        if Ui == 0.0:  # initial run
-            startfile = 'liquid.data'
-    #    if R == 8.3:  # continue initial run
-    #        startfile = '8.2.cavity.data'
-        else:  # normal sequence within a run
-            # prev_Ui = UisPos[UisPos.index(Ui)-1]
-            prev_Ui = UisPos[i-1]
-            startfile = f'U{prev_Ui:+.2f}.step.data'  
-        # randomSeed = np.random.randint(0,1000)
-        main(Ui,startfile,npSeed)
+        for i, Ui in enumerate(Uis):  
+        # direct plug values in option
+        # for Ui in [-2.5, 2.5]:  
+            # print(f"{Ui:+.1f}")
+            
+            print(f"launching seed {npSeed}, Ui {Ui:+.2f}")
+            #os.system("lmp_0921 < cavity.in -v T 1100 -v R %s"%(str(R)))
+            if Ui == 0.0:  # initial run
+                startfile = 'liquid.data'
+        #    if R == 8.3:  # continue initial run
+        #        startfile = '8.2.cavity.data'
+            else:  # normal sequence within a run
+                # prev_Ui = UisPos[UisPos.index(Ui)-1]
+                prev_Ui = Uis[i-1]
+                startfile = f'U{prev_Ui:+.2f}.step.data'  
+            # randomSeed = np.random.randint(0,1000)
+            main(Ui,startfile,npSeed)
 
-        # break
-        # while not (os.path.exists(pwd+'/'+currdatafile)):
-            # time.sleep(1)   
-        # if i==1: break  # HACK
+            # break
+            # while not (os.path.exists(pwd+'/'+currdatafile)):
+                # time.sleep(1)   
+            # if i==1: break  # HACK
+
     print('Done!')
 
 

@@ -1,0 +1,15 @@
+#!/bin/bash
+#SBATCH  -n 16 -c 1 -t 48:00:00 --hint=nomultithread -o out.o%j
+
+module purge
+#module load venv/mdext
+module load venv/mdextKF
+module load openmpi
+module load pylammps
+
+#mpirun
+
+# python ../spceNima20JUL23.py \
+# 	$1 \
+
+python ../spceNima20JUL23GaussPolyContinue.py neg

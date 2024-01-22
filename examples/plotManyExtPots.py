@@ -8,8 +8,10 @@ from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.ticker as plticker
 import glob
 
-endRange = 2.5
-stepSize = 0.5
+# endRange = 2.5
+# stepSize = 0.5
+endRange = 0.1
+stepSize = 0.01
 
 particle = 1 # on a 0 index basis
 # N_bulk = 0.015 # nacl
@@ -31,10 +33,13 @@ colorDict = {
 cmap = LinearSegmentedColormap('RedBlue', colorDict)
 # you can then use cmap=cmap kwarg in any plot call
 
-for Ui in np.around(np.arange(0,endRange*2 + stepSize ,stepSize), decimals=1)-endRange:  
+decimals = 2 # was 1
+for Ui in np.around(np.arange(0,endRange*2 + stepSize ,stepSize), decimals=decimals)-endRange:  
     print(f"{Ui:+.1f}")
-    
-    with h5py.File(glob.glob(f"*{Ui:+.1f}*")[0], "r") as fp:
+
+    fname = glob.glob(f"*{Ui:+.2f}*h5")[0]
+    print('loading file ', fname)
+    with h5py.File(fname, "r") as fp:
         r = np.array(fp["r"])
         n = np.array(fp["n"])
         V = np.array(fp["V"])

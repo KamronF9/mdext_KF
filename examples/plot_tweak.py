@@ -8,6 +8,10 @@ def trapz(f: np.ndarray, h: float) -> np.ndarray:
     """Cumulative trapezoidal integral of a function sampled at spacing `h`."""
     return np.concatenate(([0.0], np.cumsum(0.5 * (f[:-1] + f[1:])) * h))
 
+particle = 1 # 0 based so 1 is O in h2o
+endRange = 0.1
+stepSize = 0.01
+decimals = 2
 
 if False:
     import os
@@ -35,6 +39,7 @@ nAll = []
 VAll = []
 
 for filename in sorted(glob('*.h5')):
+    print('current file ', filename)
     with h5py.File(filename, "r") as fp:
         r = np.array(fp["r"])
         n = np.array(fp["n"])
@@ -54,34 +59,35 @@ for filename in sorted(glob('*.h5')):
         axes[1].set_ylabel("Potential (eV)")
         axes[1].set_xlabel("r")
         plt.savefig(filename[:-3]+".pdf", bbox_inches='tight')
-        # plt.show()
+        plt.clf()
 
     # Compile
-    nAll.append(n[:,0])  # appending Na only
-    # VAll.append(V[:,0])
+    nAll.append(n[:,particle])  # appending Ox only
+    # VAll.append(V[:,particle])
 
 nAll = np.stack(nAll)
 
-lbda = np.array([-.5,-.4,-.3,-.2,-.1,.1,.2,.3,.4,.5])  # don't know why 0 was missing...
-Vselect = V[:,0]/lbda[-1]  # V/U0
+lbda = np.around(np.arange(0,endRange*2 + stepSize ,stepSize), decimals=decimals)-endRange
+# lbda = np.array([-.5,-.4,-.3,-.2,-.1,.1,.2,.3,.4,.5])  # don't know why 0 was missing...
+Vselect = V[:,particle]/lbda[-1]  # V/U0
 
+if True:
+    # --- thermodynamic integration
+    dr = r[1] - r[0]
+    integrand = (nAll @ Vselect.T) * dr  # 1/A*eV*A
+    dlbda = lbda[1] - lbda[0]
+    E_TI = trapz(integrand, dlbda)
+    E_TI -= np.interp(0.0, lbda, E_TI)  # difference from bulk
+    plt.plot(lbda, E_TI, "r+", label="TI")
+    plt.axhline(0, color="k", lw=1, ls="dotted")
+    plt.axvline(0, color="k", lw=1, ls="dotted")
+    plt.legend()
+    plt.xlim(lbda.min(), lbda.max())
+    plt.xlabel(r"Perturbation strength, $V_0$")
+    plt.ylabel(r"Free energy change, $\Delta\Phi$")
+    plt.savefig("NaCl_TI.pdf", bbox_inches='tight')
+    plt.show()
 
-# # --- thermodynamic integration
-# dr = r[1] - r[0]
-# integrand = (nAll @ Vselect.T) * dr  # 1/A*eV*A
-# dlbda = 0.1 # change in U0
-# E_TI = trapz(integrand, dlbda)
-# E_TI -= np.interp(0.0, lbda, E_TI)  # difference from bulk
-# plt.plot(lbda, E_TI, "r+", label="TI")
-# plt.axhline(0, color="k", lw=1, ls="dotted")
-# plt.axvline(0, color="k", lw=1, ls="dotted")
-# plt.legend()
-# plt.xlim(lbda.min(), lbda.max())
-# plt.xlabel(r"Perturbation strength, $V_0$")
-# plt.ylabel(r"Free energy change, $\Delta\Phi$")
-# plt.savefig("NaCl_TI.pdf", bbox_inches='tight')
-# plt.show()
-
-# np.shape(Vselect) # 200
-# np.shape(integrand)
-# np.shape(E_TI)
+    np.shape(Vselect) # 200
+    np.shape(integrand)
+    np.shape(E_TI)

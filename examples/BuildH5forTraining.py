@@ -3,12 +3,25 @@
 import numpy as np
 import sys
 import h5py
+import glob
+import matplotlib.pyplot as plt
 # import mldft1d
 
 # read in H5 files for each ext potential
-endRange = 15.0
-stepSize = 0.5
-filename = 'data1N0.7T1P0.7.h'
+
+# 1D LJ:
+# endRange = 15.0
+# stepSize = 0.5
+# decimals = 1
+
+# Water:
+# Define particle if multiple particles used - H2O
+particle = 1 # 0 based so 1 is O in H2O
+endRange = 0.1
+stepSize = 0.01
+decimals = 2
+
+filename = 'AllData003water.h'
 
 rAll = []
 nAll = []
@@ -16,24 +29,60 @@ VAll = []
 EAll = []
 lbdaAll = []
 
-for Ui in np.around(np.arange(0,endRange*2 + stepSize ,stepSize), decimals=1)-endRange:  
-    print(f"{Ui:+.1f}")
-    
-    with h5py.File(f"test-U{Ui:+.1f}.h", "r") as fp:
+def mirrorData(data,sign):
+    lenData = len(data)
+    mirroredData=np.zeros(2*lenData-1)
+    # print(sign*data[::-1][:-1])
+    mirroredData[:lenData-1]=sign*data[::-1][:-1] # reverse and leave out last (ie 0 pt)
+    mirroredData[lenData-1:]=data
+
+    # n_sym=np.zeros((2*len(n),2))
+    # np.zeros_like(n)
+    # n_sym[:len(n)]=n[::-1]
+    # n_sym[len(n):]=n
+    return mirroredData
+
+for Ui in np.around(np.arange(0,endRange*2 + stepSize ,stepSize), decimals=decimals)-endRange:  
+    # print(f"{Ui:+.1f}")
+    fname = glob.glob(f"*{Ui:+.2f}*h5")[0]
+    print('loading file ', fname)
+
+    with h5py.File(fname, "r") as fp:
         r = np.array(fp["r"])
-        n = np.array(fp["n"]).flatten()
-        V = np.array(fp["V"]).flatten()
+        mir_r = mirrorData(r,-1)
+
+        if 'particle' in locals():
+            n = np.array(fp["n"])[:,particle].flatten()
+            V = np.array(fp["V"])[:,particle].flatten()
+        else:
+            n = np.array(fp["n"]).flatten()
+            V = np.array(fp["V"]).flatten()
         # print(V)
         # print(np.shape(V)[0])
         # sys.exit(1)
-        E = np.array(fp["pe_history"]).mean()
+        mir_n = mirrorData(n,1)
+        mir_V = mirrorData(V,1)
+        # print(mir_r)
+        # plt.plot(r,n)
+        # plt.savefig('n')
+        # plt.clf()
+        # plt.plot(mir_r,mir_n)
+        # plt.savefig('mir_n')
+        # plt.clf()
+        # sys.exit(1)
+
+        try:
+            E = np.array(fp["pe_history"]).mean()
+        except:
+            print('no PE data in H5 to read')
+            E = np.zeros(1)
         if Ui==0.: 
             print(f'N_bulk is {n.mean()=}')
             n_bulk = n.mean()
 
-    # rAll.append(r.copy())
-    nAll.append(n.copy())
-    # VAll.append(V.copy())
+    # rAll.append(mir_r.copy())
+    nAll.append(mir_n.copy())
+    # VAll.append(mir_V.copy())
     EAll.append(E.copy())
     lbdaAll.append(Ui)
 
@@ -42,8 +91,8 @@ for Ui in np.around(np.arange(0,endRange*2 + stepSize ,stepSize), decimals=1)-en
 # generate rolled up H5 file for TI and training
 
 f = h5py.File(filename, "w")
-f["z"] = r # was get1D(grid1d.z)
-f["V"] = V # will store last shape # was get1D(V.data)  one sample shape
+f["z"] = mir_r # was get1D(grid1d.z)
+f["V"] = mir_V # will store last shape # was get1D(V.data)  one sample shape
 f["lbda"] = lbdaAll # was lbda_arr
 f["n"] = nAll  # dim = lambdas, n_points # was n
 f["E"] = EAll # was E
