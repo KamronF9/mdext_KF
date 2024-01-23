@@ -9,8 +9,8 @@ def trapz(f: np.ndarray, h: float) -> np.ndarray:
     return np.concatenate(([0.0], np.cumsum(0.5 * (f[:-1] + f[1:])) * h))
 
 particle = 1 # 0 based so 1 is O in h2o
-endRange = 0.1
-stepSize = 0.01
+endRange = 0.16
+stepSize = 0.02
 decimals = 2
 
 if False:

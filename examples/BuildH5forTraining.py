@@ -17,11 +17,10 @@ import matplotlib.pyplot as plt
 # Water:
 # Define particle if multiple particles used - H2O
 particle = 1 # 0 based so 1 is O in H2O
-endRange = 0.1
-stepSize = 0.01
+endRange = 0.18
+stepSize = 0.02
 decimals = 2
-
-filename = 'AllData003water.h'
+filename = 'AllData003water0.18.h'
 
 rAll = []
 nAll = []
@@ -42,7 +41,9 @@ def mirrorData(data,sign):
     # n_sym[len(n):]=n
     return mirroredData
 
-for Ui in np.around(np.arange(0,endRange*2 + stepSize ,stepSize), decimals=decimals)-endRange:  
+Uis = np.around(np.arange(0,2*endRange + stepSize ,stepSize), decimals=decimals)-endRange
+
+for Ui in Uis:  
     # print(f"{Ui:+.1f}")
     fname = glob.glob(f"*{Ui:+.2f}*h5")[0]
     print('loading file ', fname)

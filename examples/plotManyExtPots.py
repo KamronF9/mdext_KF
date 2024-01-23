@@ -10,8 +10,10 @@ import glob
 
 # endRange = 2.5
 # stepSize = 0.5
-endRange = 0.1
-stepSize = 0.01
+# endRange = 0.1
+# stepSize = 0.01
+endRange = .16
+stepSize = 0.02
 
 particle = 1 # on a 0 index basis
 # N_bulk = 0.015 # nacl
@@ -34,8 +36,10 @@ cmap = LinearSegmentedColormap('RedBlue', colorDict)
 # you can then use cmap=cmap kwarg in any plot call
 
 decimals = 2 # was 1
-for Ui in np.around(np.arange(0,endRange*2 + stepSize ,stepSize), decimals=decimals)-endRange:  
-    print(f"{Ui:+.1f}")
+Uis = np.around(np.arange(0,2*endRange + stepSize ,stepSize), decimals=decimals)-endRange
+print(Uis)
+for Ui in Uis:  
+    print(f"{Ui:+.2f}")
 
     fname = glob.glob(f"*{Ui:+.2f}*h5")[0]
     print('loading file ', fname)

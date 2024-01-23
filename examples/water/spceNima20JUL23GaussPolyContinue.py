@@ -105,42 +105,51 @@ if __name__ == "__main__":
     # npSeed = int(sys.argv[1]) # np seed for generating the potential shape
     npSeed = 1 # np seed for generating the potential shape 
     # each seed would be run in a separate folder to prevent conflict and run in parallel
-
+    posOrNegLbdas = sys.argv[1]  # pos or neg
     # sweep through potential amplitudes option:
-    endRange = 1.0 # eV
-    stepSize = 0.01  # start around kbT
-
+    endRange = 0.2 #1.0 # eV
+    stepSize = 0.02 #0.01  # start around kbT
+    
     # Ui in eV
     UisPos = np.around(np.arange(0,endRange + stepSize ,stepSize), decimals=2) # positive only
     UisNeg = np.around(np.arange(0,-endRange - stepSize ,-stepSize), decimals=2) # Negative
-    print('Uis: ', UisPos)
-    print('Uis: ', UisNeg)
+    # print('Uis: ', UisPos)
+    # print('Uis: ', UisNeg)
     # Ui=-0.4
     # sys.exit(1)
-    for Uis in [UisPos,UisNeg]:
+    # for Uis in [UisPos,UisNeg]:
+    if posOrNegLbdas=='pos':
+        Uis = UisPos
+    elif posOrNegLbdas=='neg':
+        Uis = UisNeg
+    else:
+        print('invalid argument 1')
+        sys.exit(1)
 
-        for i, Ui in enumerate(Uis):  
-        # direct plug values in option
-        # for Ui in [-2.5, 2.5]:  
-            # print(f"{Ui:+.1f}")
-            
-            print(f"launching seed {npSeed}, Ui {Ui:+.2f}")
-            #os.system("lmp_0921 < cavity.in -v T 1100 -v R %s"%(str(R)))
-            if Ui == 0.0:  # initial run
-                startfile = 'liquid.data'
-        #    if R == 8.3:  # continue initial run
-        #        startfile = '8.2.cavity.data'
-            else:  # normal sequence within a run
-                # prev_Ui = UisPos[UisPos.index(Ui)-1]
-                prev_Ui = Uis[i-1]
-                startfile = f'U{prev_Ui:+.2f}.step.data'  
-            # randomSeed = np.random.randint(0,1000)
-            main(Ui,startfile,npSeed)
+    print('Uis to run: ', Uis)
 
-            # break
-            # while not (os.path.exists(pwd+'/'+currdatafile)):
-                # time.sleep(1)   
-            # if i==1: break  # HACK
+    for i, Ui in enumerate(Uis):  
+    # direct plug values in option
+    # for Ui in [-2.5, 2.5]:  
+        # print(f"{Ui:+.1f}")
+        
+        print(f"launching seed {npSeed}, Ui {Ui:+.2f}")
+        #os.system("lmp_0921 < cavity.in -v T 1100 -v R %s"%(str(R)))
+        if Ui == 0.0:  # initial run
+            startfile = 'liquid.data'
+    #    if R == 8.3:  # continue initial run
+    #        startfile = '8.2.cavity.data'
+        else:  # normal sequence within a run
+            # prev_Ui = UisPos[UisPos.index(Ui)-1]
+            prev_Ui = Uis[i-1]
+            startfile = f'U{prev_Ui:+.2f}.step.data'  
+        # randomSeed = np.random.randint(0,1000)
+        main(Ui,startfile,npSeed)
+
+        # break
+        # while not (os.path.exists(pwd+'/'+currdatafile)):
+            # time.sleep(1)   
+        # if i==1: break  # HACK
 
     print('Done!')
 
