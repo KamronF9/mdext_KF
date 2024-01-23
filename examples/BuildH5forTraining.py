@@ -5,22 +5,27 @@ import sys
 import h5py
 import glob
 import matplotlib.pyplot as plt
+import os
 # import mldft1d
 
 # read in H5 files for each ext potential
 
 # 1D LJ:
-# endRange = 15.0
-# stepSize = 0.5
-# decimals = 1
+endRange = 7.
+stepSize = 0.5
+decimals = 2
+filename = 'Allupto7.h5'
 
 # Water:
 # Define particle if multiple particles used - H2O
-particle = 1 # 0 based so 1 is O in H2O
-endRange = 0.18
-stepSize = 0.02
-decimals = 2
-filename = 'AllData003water0.18.h'
+# particle = 1 # 0 based so 1 is O in H2O
+# endRange = 0.18
+# stepSize = 0.02
+# decimals = 2
+# filename = 'AllData003water0.18.h'
+
+
+
 
 rAll = []
 nAll = []
@@ -50,7 +55,8 @@ for Ui in Uis:
 
     with h5py.File(fname, "r") as fp:
         r = np.array(fp["r"])
-        mir_r = mirrorData(r,-1)
+        cutoff = int(0.75*len(r))
+        mir_r = mirrorData(r[:cutoff],-1)
 
         if 'particle' in locals():
             n = np.array(fp["n"])[:,particle].flatten()
@@ -61,8 +67,9 @@ for Ui in Uis:
         # print(V)
         # print(np.shape(V)[0])
         # sys.exit(1)
-        mir_n = mirrorData(n,1)
-        mir_V = mirrorData(V,1)
+        
+        mir_n = mirrorData(n[:cutoff],1)
+        mir_V = mirrorData(V[:cutoff],1)
         # print(mir_r)
         # plt.plot(r,n)
         # plt.savefig('n')
@@ -106,7 +113,8 @@ f.attrs["n_bulk"] = n_bulk
     # f.attrs[dft_arg_name] = dft_arg_value
 f.close()
 
-
+# plot
+os.system(f'python /home/kamron/mdext_KF/examples/plotDensityTI.py {filename}')
 
 '''
 ---------------

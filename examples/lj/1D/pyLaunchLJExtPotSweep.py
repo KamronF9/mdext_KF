@@ -19,7 +19,7 @@ for i in range(len(Ts)):
     P = Ps[i] # -1 is None = NVT, else it takes on the value of P = NPT
     # p = 1 # atom type to apply the potential to (1-based)
     # g = 'planar'
-    
+    os.system('cp ../LJsweep.job ../LJsweep.py ../pyLaunchLJExtPotSweep.py .')
     
     newDir = f'P{P}_T{P}'
     os.system(f'mkdir {newDir}')
@@ -29,8 +29,8 @@ for i in range(len(Ts)):
 
 
     # sweep through potential amplitudes option:
-    endRange = 15.0
-    stepSize = 0.5
+    # endRange = 15.0
+    # stepSize = 0.5
 
     # Ui=-0.4
 
@@ -48,22 +48,18 @@ for i in range(len(Ts)):
     # for pressure in np.around(np.arange(0.1,1+stepSize,stepSize),decimals=1):
 
     # seeds = np.arange(1,2,1) # seed for np in the launches, doesn't include end
-    seeds = np.arange(2,4,1) # seed for np in the launches, doesn't include end
+    # seeds = np.arange(1,3,1) # seed for np in the launches, doesn't include end
+    seeds = [0]
 
     for seed in seeds:
-        print(seed)
-        for Ui in np.around(np.arange(0,endRange*2 + stepSize ,stepSize), decimals=1)-endRange:  
-        # for Ui in [12.5]:  
-            print(f"{Ui:+.1f}")
-            h5name = f"seed{seed:04}_test-U{Ui:+.1f}.h"
-            # seed = str(random.randint(1,1000)) # was velocity seed
-            # log = o[:-3]+"_out"
-
-            # os.system(f"sbatch ../LJsweep.job {Density}") # parallel
-            os.system(f"sbatch ../../LJsweep.job {P} {T} {seed} {Ui} {h5name}") # parallel
-
+        print('seed: ',seed)
+        os.system(f'mkdir seed{seed:04}')
+        os.chdir(f'seed{seed:04}')
+        os.system('rm out.o*')
         
-            # break
-        
-    
+        os.system(f"sbatch ../../../LJsweep.job {P} {T} {seed} pos") # parallel
+        os.system(f"sbatch ../../../LJsweep.job {P} {T} {seed} neg") # parallel
+        os.chdir('..')
+
+
     os.chdir('..')

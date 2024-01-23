@@ -16,9 +16,9 @@ def main(U0ev, startfile, npSeed) -> None:
     seed = 345
     # global U0ev
     # U0ev = (float(sys.argv[1]))  # Amplitude of the external potential (eV)
-    U0 = U0ev * 23.06   # Amplitude of the external potential (kcal/mol)
+    U0 = U0ev * 23.06   # Convert amplitude of the external potential to kcal/mol since units water classical 
     sigma = 1.0 # Width of the external potential (A)
-    np.random.seed(0)
+    np.random.seed(npSeed)
     coeffs = np.random.randn(3) # gauss and poly
     powers = np.arange(len(coeffs))
     power_pair_sums = powers[:, None] + powers[None, :]
@@ -103,7 +103,7 @@ class Setup:
 if __name__ == "__main__":
     
     # npSeed = int(sys.argv[1]) # np seed for generating the potential shape
-    npSeed = 1 # np seed for generating the potential shape 
+    npSeed = 0 # np seed for generating the potential shape 
     # each seed would be run in a separate folder to prevent conflict and run in parallel
     posOrNegLbdas = sys.argv[1]  # pos or neg
     # sweep through potential amplitudes option:
