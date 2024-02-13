@@ -4,40 +4,52 @@ import numpy as np
 from lammps import PyLammps
 from mdext import MPI, log
 import sys
+import scipy
 
 def main() -> None:
 
     # Current simulation parameters:
     T = 298.0  # K
-    P = None  # atm
-    seed = 345s
-    U0 = (float(ys.argv[1]))*23.06   # Amplitude of the external potential (kcal/mol)
+    P = 1  # atm
+    # P = None  # atm
+    seed = 345
+    global U0ev
+    U0ev = (float(sys.argv[1]))  # Amplitude of the external potential (eV)
+    U0 = U0ev * 23.06   # Amplitude of the external potential (kcal/mol)
     sigma = 1.0 # Width of the external potential (A)
-    global jj
-    jj=float(sys.argv[1]) # eV
+    np.random.seed(0)
+    coeffs = np.random.randn(3) # gauss and poly
+    powers = np.arange(len(coeffs))
+    power_pair_sums = powers[:, None] + powers[None, :]
+    norm_fac = np.sqrt(
+        np.sqrt(np.pi)
+        / (coeffs @ scipy.special.gamma(power_pair_sums + 0.5) @ coeffs)
+    )
+    coeffs *= norm_fac
+
     # Initialize and run simulation:
     md = mdext.md.MD(
         setup=setup,
         T=T,
         P=P,
         seed=seed,
-        potential=mdext.potential.Gaussian(U0, sigma),
+        potential=mdext.potential.Gaussian(U0, sigma, coeffs),
         geometry_type=mdext.geometry.Planar,
         n_atom_types=2,
         potential_type=2,
         timestep=1,
     )
-    md.run(1, "equilibration")
+    md.run(5, "equilibration")
     md.reset_stats() # was commented to allow dump?
-    md.run(2, "collection", f"water-lj-pl-U{jj:+.1f}-{sigma:+.2f}.h5")
+    md.run(10, "collection", f"water-lj-pl-U{U0ev:+.1f}-{sigma:+.2f}.h5")
 
 
 def setup(lmp: PyLammps, seed: int) -> int:
     """Setup initial atomic configuration and interaction potential."""
     
     # Construct water box:
-    # L = np.array([26.44, 24.67, 23.60])  # overall box dimensions
-    L = np.array([26.44/2, 24.67/2, 23.60/2])  # overall box dimensions
+    L = np.array([26.44, 24.67, 23.60])  # overall box dimensions
+    # L = np.array([26.44/2, 24.67/2, 23.60/2])  # overall box dimensions
     file_liquid = "liquid.data20"
     is_head = (MPI.COMM_WORLD.rank == 0)
     if is_head:
@@ -72,8 +84,10 @@ def setup(lmp: PyLammps, seed: int) -> int:
     lmp.neigh_modify("exclude none")
     # lmp.dump("write all custom 100 20_2.lammpstrj id type x y z vx vy vz")
     # # lmp.fix("BondConstraints all shake 0.001 20 0 b 1 a 1")
-    lmp.dump(f"write all custom 1000 pylammps{jj:+.1f}.dump id type element x y z")
-    lmp.dump_modify("write element H O")
+    # save dump then remove reset stats
+    if False:
+        lmp.dump(f"write all custom 1000 pylammps{U0ev:+.1f}.dump id type element x y z")
+        lmp.dump_modify("write element H O")
 
 
 if __name__ == "__main__":

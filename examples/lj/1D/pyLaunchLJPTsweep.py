@@ -39,7 +39,7 @@ for temperature in np.around(np.arange(0.1,1.5+stepSize,stepSize),decimals=1):
         # log = o[:-3]+"_out"
 
         # os.system(f"sbatch ../LJsweep.job {Density}") # parallel
-        os.system(f"sbatch ../../LJsweep.job {pressure} {temperature}") # parallel
+        os.system(f"sbatch ../../LJPTsweep.job {pressure} {temperature}") # parallel
 
         # serial
         # os.system(f"bash ../LJsweep.job {Density}") 

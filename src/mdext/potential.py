@@ -4,8 +4,10 @@ from mdext import MPI
 from .geometry import GeometryType
 from .histogram import Histogram
 from typing import Callable, Tuple
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 import h5py
+from typing import Sequence
+from numpy.polynomial.polynomial import Polynomial
 
 
 Potential = Callable[[np.ndarray], Tuple[np.ndarray, np.ndarray]]
@@ -13,17 +15,30 @@ Potential = Callable[[np.ndarray], Tuple[np.ndarray, np.ndarray]]
 Note that the derivative is also with respect to the squared-coordinate."""
 
 
+@dataclass
 class Gaussian:
-    def __init__(self, U0: float, sigma: float) -> None:
-        """Gaussian potential with peak `U0` and width `sigma`."""
-        self.U0 = U0
-        self.sigma = sigma
-        self.mhalf_inv_sigma_sq = -0.5 / (sigma ** 2)
+    """potential of gaussian with peak `U0` and width `sigma` and 
+    polynomial with `polyCoeffs` in terms of r_sq/sigma_sq
+    """
+    U0: float  #: Strength
+    sigma: float  #: width of Gaussian
+    coeffs: Sequence[float] = (1.0,)  #: list of floats for polynomial coefficients, accepts list, tuple 
+    polynomial: Polynomial = field(init=False)  #: polynomial including U0, don't initialize yet
+    deriv: Polynomial = field(init=False)  #: corresponding derivative
+    # setup added init functions
+    def __post_init__(self) -> None:
+        self.polynomial = Polynomial(np.array(self.coeffs) * self.U0)
+        self.deriv = self.polynomial.deriv()
 
-    def __call__(self, r_sq: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
-        E = self.U0 * np.exp(self.mhalf_inv_sigma_sq * r_sq)
-        r_sq_grad = self.mhalf_inv_sigma_sq * E
-        return E, r_sq_grad
+    def __call__(self, r_sq: np.ndarray):
+        sigma_sq = self.sigma**2
+        x = r_sq/sigma_sq
+        gauss = np.exp(-0.5*x)
+        poly =  self.polynomial(x)
+        dpoly_dx = self.deriv(x)
+        E = gauss * poly
+        dE_dx =  gauss * (-0.5 * poly + dpoly_dx)
+        return E, dE_dx / sigma_sq
 
 
 @dataclass

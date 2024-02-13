@@ -9,4 +9,4 @@ module load pylammps
 
 #mpirun
 
-python ../pyLaunchLJsweep.py
+python ../pyLaunchLJExtPotSweep.py

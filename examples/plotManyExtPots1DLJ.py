@@ -6,18 +6,12 @@ import os
 import matplotlib as mpl
 from matplotlib.colors import LinearSegmentedColormap
 import matplotlib.ticker as plticker
-import glob
 
-# endRange = 2.5
-# stepSize = 0.5
-# endRange = 0.1
-# stepSize = 0.01
-endRange = .16
-stepSize = 0.02
+endRange = 15.0
+stepSize = 0.5
 
-particle = 1 # on a 0 index basis
-# N_bulk = 0.015 # nacl
-N_bulk = 0.033325 # water
+# particle = 1 # on a 0 index basis
+N_bulk = 1.  # dummy value
 
 
 # plt.figure(1)
@@ -35,23 +29,18 @@ colorDict = {
 cmap = LinearSegmentedColormap('RedBlue', colorDict)
 # you can then use cmap=cmap kwarg in any plot call
 
-decimals = 2 # was 1
-Uis = np.around(np.arange(0,2*endRange + stepSize ,stepSize), decimals=decimals)-endRange
-print(Uis)
-for Ui in Uis:  
-    print(f"{Ui:+.2f}")
-
-    fname = glob.glob(f"*{Ui:+.2f}*h5")[0]
-    print('loading file ', fname)
-    with h5py.File(fname, "r") as fp:
+for Ui in np.around(np.arange(0,endRange*2 + stepSize ,stepSize), decimals=1)-endRange:  
+    print(f"{Ui:+.1f}")
+    
+    with h5py.File(f"test-U{Ui:+.1f}.h", "r") as fp:
         r = np.array(fp["r"])
         n = np.array(fp["n"])
         V = np.array(fp["V"])
         if Ui==0.: 
-            print(f'{n.mean()=}')
-    plt.plot(r,n[:,particle]/(N_bulk),color=cmap(normalize(Ui)), lw=1)
+            print(f'N_bulk is {n.mean()=}')
+    plt.plot(r,n[:]/(N_bulk),color=cmap(normalize(Ui)), lw=1)
     plt.xlabel("z [$\AA$]",fontsize=14)
-    plt.ylabel("$n_{O}(z)/n_{bulk}$",fontsize=14)
+    plt.ylabel("$n_{LJ}(z)/n_{bulk}$",fontsize=14)
     # plt.ylabel("$n_{H}(z)/n_{bulk}$",fontsize=11,fontname="Times New Roman")
     
     # plt.legend()
@@ -64,7 +53,8 @@ for Ui in Uis:
 
 # plt.plot(r, V, color="k", lw=1, ls="dashed")  # plot largest shaped V
 # plt.xlim([r.min(),r.max()])
-# plt.ylim([0,5])
+# plt.xlim([0,5])
+# plt.ylim([0,1])
 
 # --- add colorbar
 sm = mpl.cm.ScalarMappable(cmap=cmap, norm=normalize)
@@ -72,5 +62,5 @@ sm.set_array([])
 plt.colorbar(sm, label=r"Perturbation strength, $\lambda$")
 figure = plt.gcf()
 # figure.set_size_inches(3.35, 2.2)
-plt.savefig('NaClplotManyExtPots.pdf', dpi=600, bbox_inches='tight')
+plt.savefig('plotManyExtPots1DLJ.pdf', dpi=600, bbox_inches='tight')
 

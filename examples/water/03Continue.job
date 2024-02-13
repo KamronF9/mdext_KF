@@ -12,5 +12,7 @@ module load pylammps
 # python ../spceNima20JUL23.py \
 # 	$1 \
 
-python ../spceNima20JUL23GaussPoly.py \
-	$1 \
+# save a record
+cp ../spceNima20JUL23GaussPolyContinue.py .
+
+python ../spceNima20JUL23GaussPolyContinue.py $1

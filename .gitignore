@@ -141,3 +141,4 @@ liquid.data
 out*
 variable.o*
 *.csv
+*.dat

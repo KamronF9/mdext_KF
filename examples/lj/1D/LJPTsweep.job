@@ -9,8 +9,6 @@ module load pylammps
 
 #mpirun
 
-# python ../spceNima20JUL23.py \
-# 	$1 \
-
-python ../spceNima20JUL23GaussPoly.py \
+python ../../LJPTsweep.py \
 	$1 \
+	$2 \

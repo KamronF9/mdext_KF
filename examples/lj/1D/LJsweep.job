@@ -12,3 +12,5 @@ module load pylammps
 python ../../LJsweep.py \
 	$1 \
 	$2 \
+	$3 \
+	$4 \

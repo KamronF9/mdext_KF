@@ -4,24 +4,32 @@ import numpy as np
 from lammps import PyLammps
 from mdext import log
 import sys
+import scipy
+from dataclasses import dataclass
 
-
-def main() -> None:
+def main(P, T, U0, startfile, npSeed) -> None:
    
-    # Current simulation parameters (all in LJ units):
-    T = float(sys.argv[2])  # was 0.7 in LJ epsilon
-    P = float(sys.argv[1])  # in LJ epsilon/sigma^2
-    seed = 12345
-    U0 = 0.0  # Amplitude of the external potential (in LJ epsilon)
-    sigma = 0.5  # Width of the external potential (in LJ sigma)
+    sigma = 1.0  # Width of the external potential (in LJ sigma)
+
+    np.random.seed(npSeed)
+    coeffs = np.random.randn(3) # gauss and poly
+    powers = np.arange(len(coeffs))
+    power_pair_sums = powers[:, None] + powers[None, :]
+    norm_fac = np.sqrt(
+        np.sqrt(np.pi)
+        / (coeffs @ scipy.special.gamma(power_pair_sums + 0.5) @ coeffs)
+    )
+    coeffs *= norm_fac
+
+    setup = Setup(startfile)
 
     # Initialize and run simulation:
     md = mdext.md.MD(
         setup=setup,
         T=T,
         P=P,
-        seed=seed,
-        potential=mdext.potential.Gaussian(U0, sigma),
+        seed=12345,
+        potential=mdext.potential.Gaussian(U0, sigma, coeffs),
         geometry_type=mdext.geometry.Planar,
         n_atom_types=1,
         potential_type=1,
@@ -32,40 +40,116 @@ def main() -> None:
         Tdamp=0.5,
         Pdamp=1.0,
     )
-    md.run(10, "equilibration")  # 10* 50*100 = 50 ps
+    md.run(20, "equilibration")  # 10* 50*100 = 50 ps
     md.reset_stats()
-    md.run(40, "collection", f"testPress_{float(sys.argv[1])}.h5")
+    # md.run(40, "collection", f"testPress_{float(sys.argv[1])}.h5")
+    md.run(100, "collection",  f"data-U{U0:+.2f}.h5")
+    md.lmp.write_data(f'U{U0:+.2f}.step.data nocoeff')
 
 
-def setup(lmp: PyLammps, seed: int) -> int:
-    """Setup initial atomic configuration and interaction potential."""
-    
-    # Construct simulation box:
-    Lz = 30.  # only box dimension that matters
-    L = np.array([1., 1., Lz])  # overall box dimensions
+@dataclass
+class Setup:
+    startfile: str
 
-    lmp.region(
-        f"sim_box block -{L[0]/2} {L[0]/2} -{L[1]/2} {L[1]/2} -{Lz/2} {Lz/2}"
-        " units box"
-    )
-    lmp.create_box("1 sim_box")
-    n_bulk = 0.3 # was 0.7   # in LJ 1/sigma
+    def __call__(self, lmp: PyLammps, seed: int) -> int:
+        """Setup initial atomic configuration and interaction potential."""
+        
+        file_liquid = self.startfile
 
-    lmp.log(f'{float(sys.argv[1])}.log')
-    n_atoms = int(np.round(n_bulk * Lz))
-    lmp.region(f"atom_box block -0.0 0.0 -0.0 0.0 -{Lz/2} {Lz/2} units box")
-    lmp.create_atoms(f"1 random {n_atoms} {seed} atom_box")
-    lmp.mass("1 1.")
 
-    # Interaction potential:
-    lmp.pair_style("lj/cut 10")
-    lmp.pair_coeff("1 1 1.0 1.0")
-    # lmp.pair_modify("tail yes")
+        # Construct simulation box:
+        Lz = 30.  # only box dimension that matters
+        L = np.array([1., 1., Lz])  # overall box dimensions
 
-    # Initial minimize:
-    log.info("Minimizing initial structure")
-    lmp.minimize("1E-4 1E-6 10000 100000")
+        lmp.region(
+            f"sim_box block -{L[0]/2} {L[0]/2} -{L[1]/2} {L[1]/2} -{Lz/2} {Lz/2}"
+            " units box"
+        )
+        lmp.create_box("1 sim_box")
+        n_bulk = 0.7 # was 0.7   # in LJ 1/sigma
+
+        lmp.log(f'{float(sys.argv[1])}.log')
+        n_atoms = int(np.round(n_bulk * Lz))
+        lmp.region(f"atom_box block -0.0 0.0 -0.0 0.0 -{Lz/2} {Lz/2} units box")
+        lmp.create_atoms(f"1 random {n_atoms} {seed} atom_box")
+        lmp.mass("1 1.")
+
+        # Interaction potential:
+        lmp.pair_style("lj/cut 10")
+        lmp.pair_coeff("1 1 1.0 1.0")
+        # lmp.pair_modify("tail yes")
+
+        # Initial minimize:
+        log.info("Minimizing initial structure")
+        lmp.minimize("1E-4 1E-6 10000 100000")
+
+        # Dump output file - conflicts with the reset stats function above somehow
+        # lmp.dump(f"write all custom 1000 1D_T{T:.1f}_P{P:.1f}.dump id type x y z")
 
 
 if __name__ == "__main__":
-    main()
+    
+    if (len(sys.argv)-1) < 4:
+        print('usage python ...py <P> <T> <seed> <sign of potentials>')
+        sys.exit(1)
+
+    # npSeed = 1 # np seed for generating the potential shape 
+    # each seed would be run in a separate folder to prevent conflict and run in parallel
+    
+    # Current simulation parameters (all in LJ units):
+
+    if sys.argv[1] == -1.:
+        P=None
+    else:
+        P = float(sys.argv[1])  # in LJ epsilon/sigma^2
+    T = float(sys.argv[2])  # was 0.7 in LJ epsilon
+    npSeed = int(sys.argv[3])
+    
+    posOrNegLbdas = sys.argv[4]  # pos or neg
+    # sweep through potential amplitudes option:
+
+    endRange = 15.0 # Amplitude of the external potential (in LJ epsilon)
+    stepSize = 0.5 
+    
+    # Ui in eV
+    UisPos = np.around(np.arange(0,endRange + stepSize ,stepSize), decimals=2) # positive only
+    UisNeg = np.around(np.arange(0,-endRange - stepSize ,-stepSize), decimals=2) # Negative
+    # print('Uis: ', UisPos)
+    # print('Uis: ', UisNeg)
+    # Ui=-0.4
+    # sys.exit(1)
+    # for Uis in [UisPos,UisNeg]:
+    if posOrNegLbdas=='pos':
+        Uis = UisPos
+    elif posOrNegLbdas=='neg':
+        Uis = UisNeg
+    else:
+        print('invalid argument sign of potential')
+        sys.exit(1)
+
+    print('Uis to run: ', Uis)
+
+    for i, Ui in enumerate(Uis):  
+    # direct plug values in option
+    # for Ui in [-2.5, 2.5]:  
+        # print(f"{Ui:+.1f}")
+        
+        print(f"launching seed {npSeed}, Ui {Ui:+.2f}")
+        #os.system("lmp_0921 < cavity.in -v T 1100 -v R %s"%(str(R)))
+        if Ui == 0.0:  # initial run
+            startfile = 'liquid.data'
+    #    if R == 8.3:  # continue initial run
+    #        startfile = '8.2.cavity.data'
+        else:  # normal sequence within a run
+            # prev_Ui = UisPos[UisPos.index(Ui)-1]
+            prev_Ui = Uis[i-1]
+            startfile = f'U{prev_Ui:+.2f}.step.data'  
+        # randomSeed = np.random.randint(0,1000)
+        main(P,T,Ui,startfile,npSeed)
+
+        # break
+        # while not (os.path.exists(pwd+'/'+currdatafile)):
+            # time.sleep(1)   
+        # if i==1: break  # HACK
+
+    print('Done!')
