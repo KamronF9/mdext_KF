@@ -37,6 +37,7 @@ def setup(lmp: PyLammps, seed: int) -> int:
     
     # Construct water box:
     L = np.array([30., 30., 40.])  # overall box dimensions
+    # L = np.array([10., 10., 20.])  # overall box dimensions
     file_liquid = "liquid.data"
     is_head = (MPI.COMM_WORLD.rank == 0)
     if is_head:
