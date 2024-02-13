@@ -11,10 +11,10 @@ import os
 # read in H5 files for each ext potential
 
 # 1D LJ:
-endRange = 7.
+endRange = 15.
 stepSize = 0.5
 decimals = 2
-filename = 'Allupto7.h5'
+filename = sys.argv[1]
 
 # Water:
 # Define particle if multiple particles used - H2O
@@ -114,7 +114,7 @@ f.attrs["n_bulk"] = n_bulk
 f.close()
 
 # plot
-os.system(f'python /home/kamron/mdext_KF/examples/plotDensityTI.py {filename}')
+# os.system(f'python /home/kamron/mdext_KF/examples/plotDensityTI.py {filename}')
 
 '''
 ---------------
