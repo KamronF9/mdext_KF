@@ -170,7 +170,12 @@ class MD:
         self.T = T
         self.P = P
         if P is None:
+            # For dynamic update of temperature
+            # adding for GCMC
+            # lmp.compute('mdtemp all temp')
+            # lmp.compute_modify('mdtemp dynamic/dof yes') 
             lmp.fix(f"Ensemble all nvt temp {T} {T} {Tdamp}")
+            # lmp.fix_modify('Ensemble temp mdtemp')
         else:
             Pramp = f"{P} {P} {Pdamp}"
             npt_mode = {
@@ -180,12 +185,12 @@ class MD:
             }[geometry_type]
             lmp.fix(f"Ensemble all npt temp {T} {T} {Tdamp} {npt_mode}")
 
-            # Fix dof in temperature compute:
-            n_atoms = lmp.system.natoms
-            n_dof = dimension * (n_atoms - 1)
-            extra_dof = 3 * n_atoms - n_dof
-            lmp.compute_modify(f"thermo_temp extra/dof {extra_dof}")
-        lmp.fix_modify("Ensemble temp thermo_temp")
+        # Fix dof in temperature compute OK for 3D with GCMC but not 1D:
+        n_atoms = lmp.system.natoms
+        n_dof = dimension * (n_atoms - 1)
+        extra_dof = 3 * n_atoms - n_dof
+        lmp.compute_modify(f"thermo_temp extra/dof {extra_dof}")
+        lmp.fix_modify("Ensemble temp thermo_temp")  # was outside
 
         # Initial velocities and optional constraints for dimensions:
         lmp.velocity(f"all create {T} {seed} dist gaussian")
