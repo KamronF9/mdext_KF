@@ -138,7 +138,8 @@ class MD:
         # Set up LAMMPS instance:
         self.is_head = (MPI.COMM_WORLD.rank == 0)
         os.environ["OMP_NUM_THREADS"] = "1"  # run single-threaded
-        lps = lammps()
+        #  -k on g 4 -sf kk
+        lps = lammps(cmdargs='-k on g 1 -sf kk'.split())
         lmp = PyLammps(ptr=lps)
         self.lps = lps  #: Raw LAMMPS interface
         self.lmp = lmp  #: PyLAMMPS interface
