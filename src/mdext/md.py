@@ -185,11 +185,11 @@ class MD:
             }[geometry_type]
             lmp.fix(f"Ensemble all npt temp {T} {T} {Tdamp} {npt_mode}")
 
-        # Fix dof in temperature compute OK for 3D with GCMC but not 1D:
-        n_atoms = lmp.system.natoms
-        n_dof = dimension * (n_atoms - 1)
-        extra_dof = 3 * n_atoms - n_dof
-        lmp.compute_modify(f"thermo_temp extra/dof {extra_dof}")
+            # Fix dof in temperature compute OK for 3D with GCMC but not 1D:
+            n_atoms = lmp.system.natoms
+            n_dof = dimension * (n_atoms - 1)
+            extra_dof = 3 * n_atoms - n_dof
+            lmp.compute_modify(f"thermo_temp extra/dof {extra_dof}")
         lmp.fix_modify("Ensemble temp thermo_temp")  # was outside
 
         # Initial velocities and optional constraints for dimensions:
