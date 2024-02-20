@@ -139,8 +139,8 @@ class MD:
         self.is_head = (MPI.COMM_WORLD.rank == 0)
         os.environ["OMP_NUM_THREADS"] = "1"  # run single-threaded
         #  -k on g 4 -sf kk
-        # lps = lammps(cmdargs='-k on g 1 -sf kk'.split())
-        lps = lammps()
+        lps = lammps(cmdargs='-k on g 1 -sf kk'.split())
+        # lps = lammps()
         lmp = PyLammps(ptr=lps)
         self.lps = lps  #: Raw LAMMPS interface
         self.lmp = lmp  #: PyLAMMPS interface
@@ -185,11 +185,11 @@ class MD:
             }[geometry_type]
             lmp.fix(f"Ensemble all npt temp {T} {T} {Tdamp} {npt_mode}")
 
-        # Fix dof in temperature compute OK for 3D with GCMC but not 1D:
-        n_atoms = lmp.system.natoms
-        n_dof = dimension * (n_atoms - 1)
-        extra_dof = 3 * n_atoms - n_dof
-        lmp.compute_modify(f"thermo_temp extra/dof {extra_dof}")
+            # Fix dof in temperature compute OK for 3D with GCMC but not 1D:
+            n_atoms = lmp.system.natoms
+            n_dof = dimension * (n_atoms - 1)
+            extra_dof = 3 * n_atoms - n_dof
+            lmp.compute_modify(f"thermo_temp extra/dof {extra_dof}")
         lmp.fix_modify("Ensemble temp thermo_temp")  # was outside
 
         # Initial velocities and optional constraints for dimensions:
