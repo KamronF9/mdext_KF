@@ -11,67 +11,88 @@ from scipy.special import erf, erfc
 @dataclass
 class Error:
     """
-    xxxxx
+    Error function with definable features including the center, transition sharpness, 
+    Z offset, scale, and complement terms in terms of r_sq
     """
-    U0: float  #: Strength
-    sigma: float  #: width of Gaussian
-    coeffs: Sequence[float] = (1.0,)  #: list of floats for polynomial coefficients, accepts list, tuple 
-    polynomial: Polynomial = field(init=False)  #: polynomial including U0, don't initialize yet
-    deriv: Polynomial = field(init=False)  #: corresponding derivative
+    xCenter: float
+    sharpness: float
+    zOffset: float
+    scale: float
+    complement: bool
+
     # setup added init functions
-    def __post_init__(self) -> None:
-        self.polynomial = Polynomial(np.array(self.coeffs) * self.U0)
-        self.deriv = self.polynomial.deriv()
+    # def __post_init__(self) -> None:
+    #     self.polynomial = Polynomial(np.array(self.coeffs) * self.U0)
+    #     self.deriv = self.polynomial.deriv()
 
     def __call__(self, r_sq: np.ndarray):
-        sigma_sq = self.sigma**2
-        x = r_sq/sigma_sq
-        gauss = np.exp(-0.5*x)
-        poly =  self.polynomial(x)
-        dpoly_dx = self.deriv(x)
-        E = gauss * poly
-        dE_dx =  gauss * (-0.5 * poly + dpoly_dx)
-        return E, dE_dx / sigma_sq
+        r = np.sqrt(r_sq)
+        E = erf(self.sharpness*(r-self.xCenter))*self.scale
+        # plt.plot(x,(erf(sharpness*(x-xCenter))*scale+zOffset))
+        if self.complement:
+            E = 1-E
+        E += self.zOffset
+        
+        dE_dx = 2/np.sqrt(np.pi)*np.exp(-(self.sharpness*(r-self.xCenter))**2)
+        if self.complement:
+            dE_dx *= -1
+        return E, dE_dx
+
+        # x = r_sq/sigma_sq
+        # gauss = np.exp(-0.5*x)
+        # poly =  self.polynomial(x)
+        # dpoly_dx = self.deriv(x)
+        # E = gauss * poly
+        # dE_dx =  gauss * (-0.5 * poly + dpoly_dx)
+        # return E, dE_dx / sigma_sq
 
 
 def main():
     
     x = np.linspace(0, 15)
-    # Type 1
-    plt.plot(x,(erf(2*(x-10))*0.5+0.5))
-    # d/dx
-    plt.plot(x,2/np.sqrt(np.pi)*np.exp(-(2*(x-10))**2))
+    # # Type 1
+    # plt.plot(x,(erf(2*(x-10))*0.5+0.5))
+    # # d/dx
+    # plt.plot(x,2/np.sqrt(np.pi)*np.exp(-(2*(x-10))**2))
 
 
     xCenter = 10
     sharpness = 2
     zOffset = 0.5
     scale = 0.5
-    xReflect = False
-    plt.plot(x,(erf(sharpness*(x-xCenter))*scale+zOffset))
-    plt.plot(x,2/np.sqrt(np.pi)*np.exp(-(sharpness*(x-xCenter))**2))
+    complement = False
+    # plt.plot(x,(erf(sharpness*(x-xCenter))*scale+zOffset))
+    # plt.plot(x,2/np.sqrt(np.pi)*np.exp(-(sharpness*(x-xCenter))**2))
+    # plt.show()
+    test = Error(xCenter, sharpness, zOffset, scale, complement)
+    
+    E, dE_dx = test(x**2)
+    plt.plot(x, E)
+    plt.plot(x, dE_dx)
+    plt.show()
 
-
-    # Type 2
-    plt.plot(x,(1-erf(2*(x-3)))*0.5)
-    # plt.plot(x,(erfc(2*(x-3)))*0.5)
-    # d/dx
-    plt.plot(x,-2/np.sqrt(np.pi)*0.5*np.exp(-(2*(x-3))**2))
+    # # Type 2
+    # plt.plot(x,(1-erf(2*(x-3)))*0.5)
+    # # plt.plot(x,(erfc(2*(x-3)))*0.5)
+    # # d/dx
+    # plt.plot(x,-2/np.sqrt(np.pi)*0.5*np.exp(-(2*(x-3))**2))
 
     xCenter = 3
     sharpness = 2
-    zOffset = 0.
+    zOffset = -0.5
     scale = 0.5
-    xReflect = True
+    complement = True
 
-    plt.plot(x,(1-erf(sharpness*(x-xCenter))*scale+zOffset))
-    plt.plot(x,-2/np.sqrt(np.pi)*np.exp(-(sharpness*(x-xCenter))**2))
+    # plt.plot(x,(1-erf(sharpness*(x-xCenter))*scale+zOffset))
+    # plt.plot(x,-2/np.sqrt(np.pi)*np.exp(-(sharpness*(x-xCenter))**2))
 
 
+    test = Error(xCenter, sharpness, zOffset, scale, complement)
     
-    
-    # plt.plot(x,(1-erf(2*(x-3))*0.5))
-    # plt.plot(x,(erf(2*(x-3))*0.5))
+    E, dE_dx = test(x**2)
+    plt.plot(x, E)
+    plt.plot(x, dE_dx)
+    plt.show()
     
     '''
 
