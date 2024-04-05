@@ -5,7 +5,7 @@ from dataclasses import dataclass, field
 from typing import Sequence
 import matplotlib.pyplot as plt
 
-from scipy.special import erf
+from scipy.special import erf, erfc
 
 
 @dataclass
@@ -41,10 +41,6 @@ def main():
     plt.plot(x,(erf(2*(x-10))*0.5+0.5))
     # d/dx
     plt.plot(x,2/np.sqrt(np.pi)*np.exp(-(2*(x-10))**2))
-    # Type 2
-    plt.plot(x,(1-erf(2*(x-3)))*0.5)
-    # d/dx
-    plt.plot(x,-2/np.sqrt(np.pi)*0.5*np.exp(-(2*(x-3))**2))
 
 
     xCenter = 10
@@ -55,11 +51,29 @@ def main():
     plt.plot(x,(erf(sharpness*(x-xCenter))*scale+zOffset))
     plt.plot(x,2/np.sqrt(np.pi)*np.exp(-(sharpness*(x-xCenter))**2))
 
+
+    # Type 2
+    plt.plot(x,(1-erf(2*(x-3)))*0.5)
+    # plt.plot(x,(erfc(2*(x-3)))*0.5)
+    # d/dx
+    plt.plot(x,-2/np.sqrt(np.pi)*0.5*np.exp(-(2*(x-3))**2))
+
+    xCenter = 3
+    sharpness = 2
+    zOffset = 0.
+    scale = 0.5
+    xReflect = True
+
+    plt.plot(x,(1-erf(sharpness*(x-xCenter))*scale+zOffset))
+    plt.plot(x,-2/np.sqrt(np.pi)*np.exp(-(sharpness*(x-xCenter))**2))
+
+
     
     
-    plt.plot(x,(1-erf(2*(x-3))*0.5))
-    plt.plot(x,(erf(2*(x-3))*0.5))
-        
+    # plt.plot(x,(1-erf(2*(x-3))*0.5))
+    # plt.plot(x,(erf(2*(x-3))*0.5))
+    
+    '''
 
     # Equation was A exp(-x/2) (1 + Bx)
     # Algorithm:
