@@ -13,11 +13,11 @@ class Error:
     Error function with definable features including the center, transition sharpness, 
     Z offset, scale, and complement terms in terms of r_sq
     """
-    xCenter: float
-    sharpness: float
-    zOffset: float
-    scale: float
-    complement: bool
+    xCenter: float #: center of transition in erf
+    sharpness: float #: how sharp the transition is
+    zOffset: float #: adjust the height offset of the curve
+    scale: float #: scaling of the curve
+    complement: bool #: if the complement of the erf is to be used
 
     # setup added init functions
     # def __post_init__(self) -> None:
