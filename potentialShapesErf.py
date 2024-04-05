@@ -41,12 +41,13 @@ def main():
     
     r = np.linspace(0, 15)
     r_sq = r**2
-    # # Type 1
+    # # Type 1 - well trap
+
     # plt.plot(x,(erf(2*(x-10))*0.5+0.5))
     # # d/dx
     # plt.plot(x,2/np.sqrt(np.pi)*np.exp(-(2*(x-10))**2))
 
-
+    
     xCenter = 10
     sharpness = 2
     zOffset = 0.5
@@ -66,12 +67,14 @@ def main():
     plt.plot(r, dE_dx)
     plt.show()
 
-    # # Type 2
+    # # Type 2 - flat top center:
+    
     # plt.plot(x,(1-erf(2*(x-3)))*0.5)
     # # plt.plot(x,(erfc(2*(x-3)))*0.5)
     # # d/dx
     # plt.plot(x,-2/np.sqrt(np.pi)*0.5*np.exp(-(2*(x-3))**2))
 
+    
     xCenter = 3
     sharpness = 2
     zOffset = -0.5
