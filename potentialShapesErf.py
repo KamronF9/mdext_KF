@@ -24,13 +24,13 @@ class Error:
     #     self.deriv = self.polynomial.deriv()
 
     def __call__(self, r_sq: np.ndarray):
-        r = np.sqrt(r_sq)
-        E = erf(self.sharpness*(r-self.xCenter))*self.scale
+        x = r_sq
+        E = erf(self.sharpness*(x-self.xCenter))*self.scale
         if self.complement:
             E = 1-E
         E += self.zOffset
         
-        dE_dx = 2/np.sqrt(np.pi)*np.exp(-(self.sharpness*(r-self.xCenter))**2)
+        dE_dx = 2/np.sqrt(np.pi)*np.exp(-(self.sharpness*(x-self.xCenter))**2)
         if self.complement:
             dE_dx *= -1
         return E, dE_dx
@@ -39,7 +39,8 @@ class Error:
 
 def main():
     
-    x = np.linspace(0, 15)
+    r = np.linspace(0, 15)
+    r_sq = r**2
     # # Type 1
     # plt.plot(x,(erf(2*(x-10))*0.5+0.5))
     # # d/dx
@@ -53,10 +54,16 @@ def main():
     complement = False
 
     test = Error(xCenter, sharpness, zOffset, scale, complement)
-    
-    E, dE_dx = test(x**2)
-    plt.plot(x, E)
-    plt.plot(x, dE_dx)
+
+    # test as it would be w r_sq input    
+    E, dE_dx = test(r_sq)
+    plt.plot(r_sq, E)
+    plt.plot(r_sq, dE_dx)
+    plt.show()
+
+    E, dE_dx = test(r)
+    plt.plot(r, E)
+    plt.plot(r, dE_dx)
     plt.show()
 
     # # Type 2
@@ -73,9 +80,9 @@ def main():
 
     test = Error(xCenter, sharpness, zOffset, scale, complement)
     
-    E, dE_dx = test(x**2)
-    plt.plot(x, E)
-    plt.plot(x, dE_dx)
+    E, dE_dx = test(r)
+    plt.plot(r, E)
+    plt.plot(r, dE_dx)
     plt.show()
     
 if __name__ == "__main__":
