@@ -10,18 +10,24 @@ import os
 
 # read in H5 files for each ext potential
 
-# 1D LJ:
-endRange = 15.
-stepSize = 0.5
-decimals = 2
 filename = sys.argv[1]
+
+# 1D LJ:
+# endRange = 15.
+# stepSize = 0.5
+# decimals = 2
+
+
+
 
 # Water:
 # Define particle if multiple particles used - H2O
-# particle = 1 # 0 based so 1 is O in H2O
-# endRange = 0.18
-# stepSize = 0.02
-# decimals = 2
+particle = 1 # 0 based so 1 is O in H2O
+endRange = 0.20
+# endRange = 0.16
+stepSize = 0.02
+decimals = 2
+
 # filename = 'AllData003water0.18.h'
 
 
@@ -46,16 +52,35 @@ def mirrorData(data,sign):
     # n_sym[len(n):]=n
     return mirroredData
 
-Uis = np.around(np.arange(0,2*endRange + stepSize ,stepSize), decimals=decimals)-endRange
+# Uis = np.around(np.arange(0,2*endRange + stepSize ,stepSize), decimals=decimals)-endRange
+Uis = np.around(np.arange(0,endRange + stepSize ,stepSize), decimals=decimals) # correct
+# Uis = np.around(np.arange(0.02,endRange + stepSize ,stepSize), decimals=decimals) #  HACKY line
 
-for Ui in Uis:  
+# find min box size
+rlenAll = []
+for iter, Ui in enumerate(Uis):  
     # print(f"{Ui:+.1f}")
     fname = glob.glob(f"*{Ui:+.2f}*h5")[0]
     print('loading file ', fname)
-
     with h5py.File(fname, "r") as fp:
         r = np.array(fp["r"])
-        cutoff = int(0.75*len(r))
+        rlenAll.append(len(r))
+
+cutoff = min(rlenAll)
+print('cutoff len ',cutoff)
+
+
+for iter, Ui in enumerate(Uis):  
+    # print(f"{Ui:+.1f}")
+    fname = glob.glob(f"*{Ui:+.2f}*h5")[0]
+    print('loading file ', fname)
+    with h5py.File(fname, "r") as fp:
+    
+        r = np.array(fp["r"])
+        # if iter == 0:
+        #     # set cutoff before box schrinks
+        #     cutoff = int(0.75*len(r))
+        #     # cutoff = int(1.*len(r))
         mir_r = mirrorData(r[:cutoff],-1)
 
         if 'particle' in locals():
@@ -87,6 +112,8 @@ for Ui in Uis:
         if Ui==0.: 
             print(f'N_bulk is {n.mean()=}')
             n_bulk = n.mean()
+    
+    # print(n.shape)
 
     # rAll.append(mir_r.copy())
     nAll.append(mir_n.copy())
@@ -97,6 +124,8 @@ for Ui in Uis:
 # print(np.shape(VAll))
 # sys.exit(1)
 # generate rolled up H5 file for TI and training
+
+
 
 f = h5py.File(filename, "w")
 f["z"] = mir_r # was get1D(grid1d.z)

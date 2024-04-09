@@ -4,7 +4,9 @@ import h5py
 import sys
 from glob import glob
 import matplotlib as mpl
+from scipy.ndimage import gaussian_filter1d
 
+sigFilter = 3
 
 def trapz(f: np.ndarray, h: float) -> np.ndarray:
     """Cumulative trapezoidal integral of a function sampled at spacing `h`."""
@@ -18,7 +20,10 @@ def plot_data(data_file: str) -> None:
         lbda = np.array(f["lbda"])
         n = np.array(f["n"])
         E = np.array(f["E"])
-        n_bulk = f.attrs["n_bulk"]
+        try:
+            n_bulk = f.attrs["n_bulk"]
+        except:
+            n_bulk = None
         # mu = f.attrs["mu"]
         V0 = np.array(f["V0"]) if ("V0" in f) else None
 
@@ -30,26 +35,29 @@ def plot_data(data_file: str) -> None:
     cmap = mpl.cm.get_cmap("RdBu")
     # --- plot densities
     for lbda_cur, n_cur in zip(lbda, n):
+        n_cur = gaussian_filter1d(n_cur,sigFilter)
         ax1.plot(z, n_cur, color=cmap(normalize(lbda_cur)), lw=1) # was plt.
-    ax1.axhline(n_bulk, color="k", ls="dotted", lw=1)
+    if n_bulk:
+        ax1.axhline(n_bulk, color="k", ls="dotted", lw=1)
     # --- plot potential for comparison
     ax2 = ax1.twinx()
     ax2.plot(z, V, color="k", lw=1, ls="dashed")
     ax1.set_xlabel(r"$z$") 
     ax1.set_ylabel(r"$n(z)$") # was plt.ylabel(r"$n(z)$")
     # ax2.set_ylabel('Potential Shape')
-    ax1.set_xlim(z.min(), z.max())
+    # ax1.set_xlim(z.min(), z.max())
+    ax1.set_xlim([0,None])
     # --- add colorbar
     sm = mpl.cm.ScalarMappable(cmap=cmap, norm=normalize)
     sm.set_array([])
     plt.colorbar(sm, label=r"Perturbation strength, $\lambda$", ax=plt.gca())
-    plt.savefig('_DensityPlots.pdf')
+    plt.savefig(f'_DensityPlots{sigFilter}.pdf')
 
     if len(lbda) > 1:
         # Compare exact and thermodynamically-integrated energies:
         plt.figure(2)
         # --- exact energies
-        if True:
+        if False:
             E -= np.interp(0.0, lbda, E)  # difference from bulk
             plt.plot(lbda, E, label="PE")
         # --- thermodynamic integration
