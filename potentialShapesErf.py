@@ -15,8 +15,9 @@ class Error:
     xCenter: float #: center of transition in erf
     sharpness: float #: how sharp the transition is
     zOffset: float #: adjust the height offset of the curve
-    scale: float #: scaling of the curve
-    complement: bool #: if the complement of the erf is to be used
+    correctScale: float #: scaling correction of the curve
+    # complement: bool #: if the complement of the erf is to be used
+    U0: float #: strength of signal
 
     # setup added init functions
     # def __post_init__(self) -> None:
@@ -25,14 +26,13 @@ class Error:
 
     def __call__(self, r_sq: np.ndarray):
         x = r_sq
-        E = erf(self.sharpness*(x-self.xCenter))*self.scale
-        if self.complement:
-            E = 1-E
+        E = erf(self.sharpness*(x-self.xCenter))*self.correctScale
+        E = 1-E  # complement
         E += self.zOffset
+        E *= self.U0
         
-        dE_dx = 2/np.sqrt(np.pi)*np.exp(-(self.sharpness*(x-self.xCenter))**2)
-        if self.complement:
-            dE_dx *= -1
+        dE_dx = 2/np.sqrt(np.pi)*np.exp(-(self.sharpness*(x-self.xCenter))**2)*self.correctScale*self.U0
+        dE_dx *= -1  # complement
         return E, dE_dx
 
 
@@ -46,47 +46,53 @@ def main():
     # plt.plot(x,(erf(2*(x-10))*0.5+0.5))
     # # d/dx
     # plt.plot(x,2/np.sqrt(np.pi)*np.exp(-(2*(x-10))**2))
-
-    
+    '''
+    # for scale in range(4):
     xCenter = 10
     sharpness = 2
     zOffset = 0.5
-    scale = 0.5
+    correctScale = 0.5
     complement = False
 
-    test = Error(xCenter, sharpness, zOffset, scale, complement)
+    test = Error(xCenter, sharpness, zOffset, correctScale, complement, U0)
 
     # test as it would be w r_sq input    
-    E, dE_dx = test(r_sq)
-    plt.plot(r_sq, E)
-    plt.plot(r_sq, dE_dx)
-    plt.show()
+    # E, dE_dx = test(r_sq)
+    # plt.plot(r_sq, E)
+    # plt.plot(r_sq, dE_dx)
+    # plt.show()
 
     E, dE_dx = test(r)
     plt.plot(r, E)
     plt.plot(r, dE_dx)
     plt.show()
+    '''
 
     # # Type 2 - flat top center:
-    
+
     # plt.plot(x,(1-erf(2*(x-3)))*0.5)
     # # plt.plot(x,(erfc(2*(x-3)))*0.5)
     # # d/dx
     # plt.plot(x,-2/np.sqrt(np.pi)*0.5*np.exp(-(2*(x-3))**2))
 
+    U0s = np.arange(0,2*2+1)-2
     
-    xCenter = 3
-    sharpness = 2
-    zOffset = -0.5
-    scale = 0.5
-    complement = True
 
-    test = Error(xCenter, sharpness, zOffset, scale, complement)
-    
-    E, dE_dx = test(r)
-    plt.plot(r, E)
-    plt.plot(r, dE_dx)
-    plt.show()
+    for U0 in U0s:
+        print(U0)
+        xCenter = 10
+        sharpness = 2
+        zOffset = -0.5 # fixed
+        correctScale = 0.5 # fixed
+        # complement = True # always
+        # U0 = -1
+
+        test = Error(xCenter, sharpness, zOffset, correctScale, U0)
+        
+        E, dE_dx = test(r)
+        plt.plot(r, E)
+        plt.plot(r, dE_dx)
+        plt.show()
     
 if __name__ == "__main__":
     main()
