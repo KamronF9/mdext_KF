@@ -16,6 +16,28 @@ Potential = Callable[[np.ndarray], Tuple[np.ndarray, np.ndarray]]
 Note that the derivative is also with respect to the squared-coordinate."""
 
 
+@dataclass
+class Error:
+    """
+    Error function with definable features including the center, transition sharpness, 
+    Z offset, scale, and complement terms in terms of r_sq
+    """
+    xCenter: float #: center of transition in erf
+    sharpness: float #: how sharp the transition is
+    zOffset: float #: adjust the height offset of the curve
+    correctScale: float #: scaling correction of the curve
+    U0: float #: strength of signal
+
+    def __call__(self, r_sq: np.ndarray):
+        x = np.sqrt(r_sq)
+        E = erf(self.sharpness*(x-self.xCenter))*self.correctScale
+        E = 1-E  # complement
+        E += self.zOffset
+        E *= self.U0
+        
+        dE_dx = 2/np.sqrt(np.pi)*np.exp(-(self.sharpness*(x-self.xCenter))**2)*self.correctScale*self.U0
+        dE_dx *= -1  # complement
+        return E, dE_dx
 
 
 
