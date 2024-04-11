@@ -25,7 +25,7 @@ class Error:
     #     self.deriv = self.polynomial.deriv()
 
     def __call__(self, r_sq: np.ndarray):
-        x = r_sq
+        x = np.sqrt(r_sq)
         E = erf(self.sharpness*(x-self.xCenter))*self.correctScale
         E = 1-E  # complement
         E += self.zOffset
@@ -89,7 +89,7 @@ def main():
 
         test = Error(xCenter, sharpness, zOffset, correctScale, U0)
         
-        E, dE_dx = test(r)
+        E, dE_dx = test(r_sq)
         plt.plot(r, E)
         plt.plot(r, dE_dx)
         plt.show()
