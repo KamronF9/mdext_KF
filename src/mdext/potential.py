@@ -29,7 +29,7 @@ class Error:
     U0: float #: strength of signal
 
     def __call__(self, r_sq: np.ndarray):
-        x = np.sqrt(r_sq)
+        x = r_sq
         E = erf(self.sharpness*(x-self.xCenter))*self.correctScale
         E = 1-E  # complement
         E += self.zOffset
