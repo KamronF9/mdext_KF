@@ -1,0 +1,15 @@
+#!/bin/bash
+#SBATCH -n 1 -c 1 -t 2-0 --hint=nomultithread -o out.o%j
+
+module purge
+# module use /home/kamron/modules
+module load venv/mdextKF
+module load openmpi
+module load pylammps
+
+
+python ../../spce.py $1
+
+#OLD: mpirun python ../../spce.py $1
+#OLD: #SBATCH -N 1 -n 16 -c 1 -t 1-0 --hint=nomultithread -o out.o%j
+#OLD: #SBATCH -p phi -N 1 -n 64 -c 1 -t 1-0 --hint=nomultithread -o out.o%j

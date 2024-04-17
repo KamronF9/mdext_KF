@@ -30,12 +30,12 @@ class Error:
 
     def __call__(self, r_sq: np.ndarray):
         x = r_sq
-        E = erf(self.sharpness*(x-self.xCenter))*self.correctScale
+        E = erf(self.sharpness*(x-self.xCenter**2))*self.correctScale
         E = 1-E  # complement
         E += self.zOffset
         E *= self.U0
         
-        dE_dx = 2/np.sqrt(np.pi)*np.exp(-(self.sharpness*(x-self.xCenter))**2)*self.correctScale*self.U0
+        dE_dx = 2/np.sqrt(np.pi)*np.exp(-(self.sharpness*(x-self.xCenter**2))**2)*self.correctScale*self.U0
         dE_dx *= -1  # complement
         return E, dE_dx
 
