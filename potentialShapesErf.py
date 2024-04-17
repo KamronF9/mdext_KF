@@ -25,7 +25,7 @@ class Error:
     #     self.deriv = self.polynomial.deriv()
 
     def __call__(self, r_sq: np.ndarray):
-        x = np.sqrt(r_sq)
+        x = r_sq
         E = erf(self.sharpness*(x-self.xCenter))*self.correctScale
         E = 1-E  # complement
         E += self.zOffset
@@ -39,7 +39,7 @@ class Error:
 
 def main():
     
-    r = np.linspace(0, 15)
+    r = np.linspace(0, 15,num=1000)
     r_sq = r**2
     # # Type 1 - well trap
 
@@ -81,7 +81,7 @@ def main():
     for U0 in U0s:
         print(U0)
         xCenter = 10
-        sharpness = 2
+        sharpness = 0.3 #2
         zOffset = -0.5 # fixed
         correctScale = 0.5 # fixed
         # complement = True # always
