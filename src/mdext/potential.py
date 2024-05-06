@@ -35,7 +35,7 @@ class Error:
         E += self.zOffset
         E *= self.U0
         
-        dE_dx = 2/np.sqrt(np.pi)*np.exp(-(self.sharpness*(x-self.xCenter**2))**2)*self.correctScale*self.U0
+        dE_dx = 2/np.sqrt(np.pi)*np.exp(-(self.sharpness*(x-self.xCenter**2))**2)*self.correctScale*self.U0*self.sharpness
         dE_dx *= -1  # complement
         return E, dE_dx
 
