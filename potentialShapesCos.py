@@ -4,7 +4,7 @@ from dataclasses import dataclass, field
 from typing import Sequence
 import matplotlib.pyplot as plt
 
-from scipy.special import 
+
 
 @dataclass
 class sinusoid:
@@ -28,7 +28,7 @@ class sinusoid:
         x = r_sq
         E = np.cos(np.sqrt(x))
         
-        dE_dx = -sin(x)*0.5*x**-0.5
+        dE_dx = -np.sin(np.sqrt(x))*0.5*x**(-0.5)
         return E, dE_dx
 
 
@@ -77,12 +77,12 @@ def main():
     # for U0 in U0s:
     for U0 in [1]:
         print(U0)
-        # xCenter = 5
-        # sharpness = 0.2
-        # xCenter = 10 # 10
-        # sharpness = 0.1 # 0.1
-        # zOffset = -0.5 # fixed
-        # correctScale = 0.5 # fixed
+        xCenter = 5
+        sharpness = 0.2
+        xCenter = 10 # 10
+        sharpness = 0.1 # 0.1
+        zOffset = -0.5 # fixed
+        correctScale = 0.5 # fixed
         # complement = True # always
         # U0 = -1
 
