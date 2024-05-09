@@ -23,7 +23,7 @@ down_sample = 2  # reduction in resolution for output
 T = 300 * T_unit  # in atomic units
 
 # Bulk EOS properties of water
-eos_data = np.loadtxt("Bulk/a_ex.dat").T
+eos_data = np.loadtxt("a_ex.dat").T
 n_bulk_data = eos_data[0] * n_unit
 a_ex_bulk_data = eos_data[1] * n_unit * V_unit
 a_ex_prime_bulk_data = eos_data[2] * V_unit
@@ -38,6 +38,7 @@ n_bulk_from_P = CubicSpline(P_data[i_P_min:], n_bulk_data[i_P_min:])
 def get_data(prefix: str, lbda: float) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
     """Get grid, ext. potential and density for lbda within prefix."""
     filename = f"{prefix}/data-U{lbda:+.2f}.h5"
+    print(filename)
     with h5py.File(filename, "r") as fp:
         r = np.array(fp["r"]) * r_unit
         V = np.array(fp["V"])[:, 1] * V_unit  # only keep O
@@ -119,7 +120,8 @@ def convert(src_path: str, out_file: str) -> None:
 
 
 def main() -> None:
-    for seed in range(640):
+    # for seed in range(640):
+    for seed in [1]:
         out_file = f"Data/random{seed}.h5"
         if os.path.isfile(out_file):
             print(f"Skipped {out_file} (already exists)")

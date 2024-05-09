@@ -23,7 +23,7 @@ filename = sys.argv[1]
 # Water:
 # Define particle if multiple particles used - H2O
 particle = 1 # 0 based so 1 is O in H2O
-endRange = 0.20
+endRange = 0.30 # was 0.2
 # endRange = 0.16
 stepSize = 0.02
 decimals = 2
@@ -52,14 +52,15 @@ def mirrorData(data,sign):
     # n_sym[len(n):]=n
     return mirroredData
 
-# Uis = np.around(np.arange(0,2*endRange + stepSize ,stepSize), decimals=decimals)-endRange
-Uis = np.around(np.arange(0,endRange + stepSize ,stepSize), decimals=decimals) # correct
+# Uis = np.around(np.arange(0,2*endRange + stepSize ,stepSize), decimals=decimals)-endRange # full range
+Uis = np.around(np.arange(0,endRange + stepSize ,stepSize), decimals=decimals) # positive
+# Uis = np.around(np.arange(0,-endRange - stepSize ,-stepSize), decimals=decimals) # negative
 # Uis = np.around(np.arange(0.02,endRange + stepSize ,stepSize), decimals=decimals) #  HACKY line
 
 # find min box size
 rlenAll = []
 for iter, Ui in enumerate(Uis):  
-    # print(f"{Ui:+.1f}")
+    print(f"{Ui:+.2f}")
     fname = glob.glob(f"*{Ui:+.2f}*h5")[0]
     print('loading file ', fname)
     with h5py.File(fname, "r") as fp:

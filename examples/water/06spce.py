@@ -102,8 +102,8 @@ if __name__ == "__main__":
     stepSize = 0.02  # eV
     
     # Ui in eV
-    Uis = np.around(np.arange(0,endRange + stepSize ,stepSize), decimals=2) # positive only
-    # UisNeg = np.around(np.arange(0,-endRange - stepSize ,-stepSize), decimals=2) # Negative
+    # Uis = np.around(np.arange(0,endRange + stepSize ,stepSize), decimals=2) # positive only
+    Uis = np.around(np.arange(0,-endRange - stepSize ,-stepSize), decimals=2) # Negative
     # Uis = [0.0,0.3]
     print('Uis to run: ', Uis)
 

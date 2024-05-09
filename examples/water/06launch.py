@@ -1,6 +1,6 @@
 import os
 
-os.system('cp ../05* .')
+os.system('cp ../06* .')
 
 # Comment out old seeds already launched (to prevent relaunching), add more as needed
 #seeds = range(0, 192)  # launched on cpu
@@ -13,5 +13,5 @@ for seed in seeds:
     runPath = f'Runs/seed{seed:04}'
     os.system(f'mkdir -p {runPath}')
     os.chdir(runPath)  
-    os.system(f'sbatch ../../run.job {seed}')
+    os.system(f'sbatch ../../06run.job {seed}')
     os.chdir('../..')

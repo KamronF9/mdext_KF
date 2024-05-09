@@ -19,7 +19,8 @@ for seedfol in */; do
         replicafolName=$(echo "$replicafol" | sed 's/\///g')  # remove the / from the folder name
         
         # build H5
-        h5Name=${seedfolName}${replicafolName}Grouped.h5
+        # h5Name=${seedfolName}${replicafolName}Grouped.h5  
+        h5Name=${seedfolName}Grouped.h5 # HACK - no replica
         echo $h5Name
         python /home/kamron/mdext_KF/examples/BuildH5forTraining.py ${h5Name}
         python /home/kamron/mdext_KF/examples/plotDensityTI.py ${h5Name}
