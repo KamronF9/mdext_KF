@@ -31,7 +31,7 @@ class Error:
         E += self.zOffset
         E *= self.U0
         
-        dE_dx = 2/np.sqrt(np.pi)*np.exp(-(self.sharpness*(x-self.xCenter**2))**2)*self.correctScale*self.U0
+        dE_dx = 2/np.sqrt(np.pi)*np.exp(-(self.sharpness*(x-self.xCenter**2))**2)*self.correctScale*self.U0*self.sharpness
         dE_dx *= -1  # complement
         return E, dE_dx
 
@@ -78,10 +78,13 @@ def main():
     U0s = np.arange(0,2*2+1)-2
     
 
-    for U0 in U0s:
+    # for U0 in U0s:
+    for U0 in [1]:
         print(U0)
-        xCenter = 5
-        sharpness = 0.3 #2
+        # xCenter = 5
+        # sharpness = 0.2
+        xCenter = 10 # 10
+        sharpness = 0.1 # 0.1
         zOffset = -0.5 # fixed
         correctScale = 0.5 # fixed
         # complement = True # always
@@ -92,6 +95,7 @@ def main():
         E, dE_dx = test(r_sq)
         plt.plot(r, E)
         plt.plot(r, dE_dx)
+        plt.plot(np.sqrt(0.5*(r_sq[:-1] + r_sq[1:])), np.diff(E) / np.diff(r_sq))
         plt.show()
     
 if __name__ == "__main__":
