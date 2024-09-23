@@ -8,13 +8,28 @@ from dataclasses import dataclass, field
 import h5py
 from typing import Sequence
 from numpy.polynomial.polynomial import Polynomial
-from scipy.special import erf, erfc
+from scipy.special import erf, erfc, sinc
 
 
 Potential = Callable[[np.ndarray], Tuple[np.ndarray, np.ndarray]]
 """Return potential and its derivative, given square of 1D coordinate as input.
 Note that the derivative is also with respect to the squared-coordinate."""
 
+@dataclass
+class Cosine:
+    """
+    cosine function with definable features including the wavelength and strength
+    in terms of r_sq
+    """
+    halfL: float  #: half-length of box, used to set the wavelength
+    U0: float #: strength of signal
+
+    def __call__(self, r_sq: np.ndarray):
+        x = r_sq
+        k = np.pi / self.halfL
+        E = self.U0 * np.cos(np.sqrt(x) * k)
+        dE_dx = -self.U0 * sinc(np.sqrt(x)/self.halfL)  * 0.5 * k**2
+        return E, dE_dx
 
 @dataclass
 class Error:
